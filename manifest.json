@@ -1,15 +1,36 @@
 {
-  "name": "XREngine-Starter-Template",
+  "name": "puttclub",
   "version": "0.0.1",
-  "moduleEntryPoints": ["StarterGameSystem.ts"],
-  "clientReactEntryPoint": ["StarterClientSkin.tsx"],  
+  "moduleEntryPoints": [
+    "GolfSystem.ts",
+    "GolfXRUISystem.ts"
+  ],
+  "clientReactEntryPoint": [],
   "files": [
-    "components/CubeComponent.ts",
-    "prefabs/CubePrefab.ts",
-    "Starter.module.scss",
-    "StarterClientSkin.tsx",
-    "StarterGameActions.ts",
-    "StarterGameConstants.ts",
-    "StarterGameSystem.ts"
+    "components/GolfAvatarComponent.ts",
+    "components/GolfBallComponent.ts",
+    "components/GolfClubComponent.ts",
+    "components/GolfHoleComponent.ts",
+    "components/GolfTeeComponent.ts",
+    "functions/golfBotHookFunctions.ts",
+    "functions/GolfBotHooks.ts",
+    "functions/golfFunctions.ts",
+    "functions/hitBall.ts",
+    "functions/registerGolfBotHooks.ts",
+    "functions/setupPlayerAvatar.ts",
+    "functions/setupPlayerInput.ts",
+    "golf-gltf.md",
+    "GolfAction.ts",
+    "GolfGameConstants.ts",
+    "GolfPlayerUISystem.tsx",
+    "GolfScorecardUISystem.tsx",
+    "GolfSystem.ts",
+    "GolfXRUISystem.ts",
+    "manifest.json",
+    "package.json",
+    "prefab/GolfBallPrefab.ts",
+    "prefab/GolfClubPrefab.ts",
+    "prefab/GolfGamePrefabs.ts",
+    "update-files.js"
   ]
 }

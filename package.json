@@ -1,0 +1,20 @@
+{
+  "name": "puttclub",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "update-files": "node update-files.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/puttclub/puttclub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/puttclub/puttclub/issues"
+  },
+  "homepage": "https://github.com/puttclub/puttclub#readme"
+}

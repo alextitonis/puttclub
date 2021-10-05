@@ -194,16 +194,13 @@ const GolfScorecardView = () => {
   )
 }
 
-const mat4 = new Matrix4()
-
 export const GolfScorecardUISystem = async (world: World) => {
   const ui = createScorecardUI()
 
   return () => {
-    // return world
 
     const uiComponent = getComponent(ui.entity, XRUIComponent)
-    if (!uiComponent) return world
+    if (!uiComponent) return
 
     const layer = uiComponent.layer
     layer.position.set(0, 0, -0.5)
@@ -236,7 +233,6 @@ export const GolfScorecardUISystem = async (world: World) => {
     // uiTransform.position.copy(avatarTransform.position)
     // uiTransform.position.y += avatarHeight + 0.3
 
-    return world
   }
 }
 

@@ -17,7 +17,7 @@ const clubPowerMultiplier = 3
 const velocityMultiplier = clubPowerMultiplier * 1000
 const hitAdvanceFactor = 4
 
-export const hitBall = (entityClub: Entity, entityBall?: Entity): void => {
+export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
   console.log('hitBall')
   const golfClubComponent = getComponent(entityClub, GolfClubComponent)
   const collider = getComponent(entityBall, ColliderComponent)

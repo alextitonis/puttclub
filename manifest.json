@@ -21,6 +21,7 @@
     "functions/setupPlayerInput.ts",
     "golf-gltf.md",
     "GolfAction.ts",
+    "GolfCourseScoreUISystem.tsx",
     "GolfGameConstants.ts",
     "GolfPlayerUISystem.tsx",
     "GolfScorecardUISystem.tsx",
@@ -30,7 +31,12 @@
     "package.json",
     "prefab/GolfBallPrefab.ts",
     "prefab/GolfClubPrefab.ts",
-    "prefab/GolfGamePrefabs.ts",
+    "tests/actions/hitBallTest.ts",
+    "tests/actions/resetBallTest.ts",
+    "tests/actions/teleportToBallTest.ts",
+    "tests/golf-test-scene.glb",
+    "tests/golf.test.ts",
+    "tests/golftest.world",
     "update-files.js"
   ]
 }

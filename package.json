@@ -4,7 +4,11 @@
   "description": "",
   "main": "",
   "scripts": {
-    "update-files": "node update-files.js"
+    "update-files": "node update-files.js",
+    "check": "tsc --noEmit",
+    "lint": "prettier --check \"**/*.{ts,tsx}\"",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "format-staged": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -16,5 +20,14 @@
   "bugs": {
     "url": "https://github.com/puttclub/puttclub/issues"
   },
-  "homepage": "https://github.com/puttclub/puttclub#readme"
+  "homepage": "https://github.com/puttclub/puttclub#readme",
+  "pre-commit": [
+    "format-staged"
+  ],
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
 }

@@ -198,7 +198,6 @@ export const GolfScorecardUISystem = async (world: World) => {
   const ui = createScorecardUI()
 
   return () => {
-
     const uiComponent = getComponent(ui.entity, XRUIComponent)
     if (!uiComponent) return
 
@@ -232,7 +231,6 @@ export const GolfScorecardUISystem = async (world: World) => {
     // uiTransform.scale.setScalar(Math.max(1, Engine.camera.position.distanceTo(avatarTransform.position) / 3))
     // uiTransform.position.copy(avatarTransform.position)
     // uiTransform.position.y += avatarHeight + 0.3
-
   }
 }
 

@@ -5,8 +5,7 @@ import { TransformComponent } from '@xrengine/engine/src/transform/components/Tr
 import { GolfBotHooks } from './GolfBotHooks'
 import { tweenXRInputSource, updateController } from '@xrengine/engine/src/bot/functions/xrBotHookFunctions'
 import { GolfState } from '../GolfSystem'
-import { isCurrentGolfPlayer, getHole, getBall, getClub, getTee } from './golfFunctions'
-import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
+import { isCurrentGolfPlayer, getHole, getBall, getTee } from './golfFunctions'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 
 export const GolfBotHookFunctions = {

@@ -82,6 +82,8 @@ const getTeePosition = (currentHole: number) => {
 function golfReceptor(action) {
   const world = useWorld()
 
+  console.log(action)
+
   GolfState.batch((s) => {
     matches(action)
       .when(GolfAction.sendState.matches, ({ state }) => {

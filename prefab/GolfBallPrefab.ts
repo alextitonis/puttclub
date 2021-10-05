@@ -227,6 +227,7 @@ export const updateBall = (entityBall: Entity): void => {
   const collider = getComponent(entityBall, ColliderComponent)
   if (!collider) return
   const ballPosition = collider.body.getGlobalPose().translation
+  console.log(ballPosition)
   const golfBallComponent = getComponent(entityBall, GolfBallComponent)
   golfBallComponent.groundRaycast.origin.copy(ballPosition as Vector3)
 
@@ -261,7 +262,7 @@ const golfBallColliderExpansion = 0.01
 
 function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: number) {
   const color = GolfColours[ownerPlayerNumber]
-  console.log(group)
+  console.log(group, color, ownerPlayerNumber)
 
   // its transform was set in createGolfBallPrefab from parameters (its transform Golf Tee);
   const transform = getComponent(ballEntity, TransformComponent)
@@ -321,14 +322,11 @@ function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: 
   })
 }
 
-type GolfBallSpawnParameters = {
-  spawnPosition: Vector3
-  playerNumber: number
-}
-
 export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._TYPE) => {
-  // const { spawnPosition, playerNumber } = parameters
+
   const world = useWorld()
+  console.log(GolfState.players.value.length)
+  console.log(action.userId)
   const ownerEntity = world.getUserAvatarEntity(action.userId)
   const playerNumber = getGolfPlayerNumber(action.userId)
   const ballEntity = world.getNetworkObject(action.networkId)
@@ -376,7 +374,7 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
   const body = world.physics.addBody({
     shapes: [shape],
     // make static on server and remote player's balls so we can still detect collision with hole
-    type: BodyType.DYNAMIC,
+    type: isMyBall ? BodyType.DYNAMIC : BodyType.STATIC,
     transform: {
       translation: transform.position,
       rotation: new Quaternion()

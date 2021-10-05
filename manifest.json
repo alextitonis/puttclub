@@ -37,6 +37,7 @@
     "tests/golf-test-scene.glb",
     "tests/golf.test.ts",
     "tests/golftest.world",
+    "tsconfig.json",
     "update-files.js"
   ]
 }

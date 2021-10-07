@@ -118,6 +118,10 @@ function golfReceptor(action) {
         const entity = world.getUserAvatarEntity(userId)
         setupPlayerAvatar(entity)
         setupPlayerInput(entity)
+        console.log(s.currentPlayerId.value, s.players.value.length)
+        if(typeof s.currentPlayerId.value === 'undefined' || s.players.value.length === 0) {
+          s.currentPlayerId.merge(userId)
+        }
       })
 
       // Setup player XR avatars
@@ -145,7 +149,7 @@ function golfReceptor(action) {
        * on spawn Goll ball
        */
       .when(GolfAction.spawnBall.matches, (action) => {
-        console.log('MAKIGN BALL')
+        console.log('MAKING BALL')
         const eid = initializeGolfBall(action)
         if (GolfState.currentPlayerId.value === action.userId) {
           setBallState(eid, BALL_STATES.WAITING)
@@ -158,7 +162,7 @@ function golfReceptor(action) {
        * on spawn Golf club
        */
       .when(GolfAction.spawnClub.matches, (action) => {
-        console.log('MAKIGN CLUB')
+        console.log('MAKING CLUB')
         initializeGolfClub(action)
       })
 

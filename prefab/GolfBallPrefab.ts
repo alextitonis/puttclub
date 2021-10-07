@@ -227,7 +227,6 @@ export const updateBall = (entityBall: Entity): void => {
   const collider = getComponent(entityBall, ColliderComponent)
   if (!collider) return
   const ballPosition = collider.body.getGlobalPose().translation
-  console.log(ballPosition)
   const golfBallComponent = getComponent(entityBall, GolfBallComponent)
   golfBallComponent.groundRaycast.origin.copy(ballPosition as Vector3)
 

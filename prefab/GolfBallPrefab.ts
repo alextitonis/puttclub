@@ -23,7 +23,7 @@ import TrailRenderer from '@xrengine/engine/src/scene/classes/TrailRenderer'
 import { Object3DComponent } from '@xrengine/engine/src/scene/components/Object3DComponent'
 import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import { GolfBallComponent } from '../components/GolfBallComponent'
-import { getGolfPlayerNumber } from '../functions/golfFunctions'
+import { getGolfPlayerNumber, getTee } from '../functions/golfFunctions'
 import { GolfCollisionGroups, GolfColours } from '../GolfGameConstants'
 import { GolfState } from '../GolfSystem'
 import { NameComponent } from '@xrengine/engine/src/scene/components/NameComponent'
@@ -31,7 +31,6 @@ import { OffScreenIndicator } from '@xrengine/engine/src/scene/classes/OffScreen
 import { SoundEffect } from '@xrengine/engine/src/audio/components/SoundEffect'
 import { PlaySoundEffect } from '@xrengine/engine/src/audio/components/PlaySoundEffect'
 import { GolfAction } from '../GolfAction'
-import { getHolePosition } from '../functions/golfBotHookFunctions'
 import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 import { BodyType, ColliderHitEvent, SceneQueryType } from '@xrengine/engine/src/physics/types/PhysicsTypes'
 import { RaycastComponentType } from '@xrengine/engine/src/physics/components/RaycastComponent'
@@ -331,9 +330,10 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
   const ballEntity = world.getNetworkObject(action.networkId)
   console.log('initializeGolfBall', JSON.stringify(action))
 
-  const spawnPosition = getHolePosition()
+  const teeEntity = getTee(GolfState.currentHole.value)
+  const teeTransform = getComponent(teeEntity, TransformComponent)
   const transform = addComponent(ballEntity, TransformComponent, {
-    position: new Vector3(spawnPosition.x, spawnPosition.y + golfBallRadius, spawnPosition.z),
+    position: new Vector3(teeTransform.position.x, teeTransform.position.y + golfBallRadius, teeTransform.position.z),
     rotation: new Quaternion(),
     scale: new Vector3().setScalar(golfBallRadius)
   })

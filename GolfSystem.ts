@@ -43,11 +43,12 @@ import { SpawnPoseComponent } from '@xrengine/engine/src/avatar/components/Spawn
 import { UserId } from '@xrengine/common/src/interfaces/UserId'
 import { NetworkWorldAction } from '@xrengine/engine/src/networking/functions/NetworkWorldAction'
 
+export const GolfHolePars = [] as Array<number>
+
 /**
  *
  */
 export const GolfState = createState({
-  holes: [{ par: 3 }, { par: 3 }, { par: 3 }] as Array<{ par: number }>,
   players: [] as Array<{
     userId: UserId
     scores: Array<number | undefined>
@@ -63,7 +64,7 @@ export const GolfState = createState({
 GolfState.attach(() => ({
   id: Symbol('Logger'),
   init: () => ({
-    onSet() {
+    onSet(arg) {
       console.log('GOLF STATE \n' + JSON.stringify(GolfState.attach(Downgraded).value, null, 2))
     }
   })
@@ -138,7 +139,9 @@ function golfReceptor(action) {
        *   - players[currentPlayer].scores[currentHole] = player.stroke
        */
       .when(GolfAction.playerStroke.matchesFromUser(s.currentPlayerId.value), ({ $from }) => {
-        s.players[$from].merge((s) => {
+        const p = s.players.find((c) => c.userId.value === $from)!
+        console.log('incremented stoke', p)
+        p.merge((s) => {
           return { stroke: s.stroke + 1 }
         })
         setBallState(getBall($from), BALL_STATES.MOVING)
@@ -208,7 +211,7 @@ function golfReceptor(action) {
 
         const entityBall = getBall(userId)
         const { state } = getComponent(entityBall, GolfBallComponent)
-
+        console.log('state', state)
         if (
           // if ball is in hole
           state === BALL_STATES.IN_HOLE ||
@@ -228,6 +231,8 @@ function golfReceptor(action) {
         const nextPlayer = playerSequence.filter((p) => {
           return p.scores.length <= currentHole && playerSequence.indexOf(p) > currentPlayerIndex
         })[0]
+
+        console.log('nextPlayer', nextPlayer)
 
         // if we have a next player, increment the current player and change turns
         if (nextPlayer) {
@@ -260,7 +265,7 @@ function golfReceptor(action) {
        *   - dispatch RESET_BALL
        */
       .when(GolfAction.nextHole.matches, () => {
-        s.currentHole.set((s.currentHole.value + 1) % s.holes.length) // TODO: earliest incomplete hole
+        s.currentHole.set((s.currentHole.value + 1) % GolfHolePars.length) // TODO: earliest incomplete hole
         if (s.currentHole.value === 0) {
           console.log('finished game! resetting player scores')
           for (const [i, p] of s.players.entries()) {
@@ -377,7 +382,8 @@ export default async function GolfSystem(world: World) {
           addComponent(entity, GolfHoleComponent, {})
         }
         if (name.includes('GolfTee')) {
-          addComponent(entity, GolfTeeComponent, {})
+          const { par } = getComponent(entity, GolfTeeComponent)
+          GolfHolePars.push(par)
         }
       }
     }
@@ -408,6 +414,7 @@ export default async function GolfSystem(world: World) {
               const dist = position.distanceToSquared(getComponent(activeHoleEntity, TransformComponent).position)
               // ball-hole collision not being detected, not sure why, use dist for now
               const inHole = dist < 0.01 //typeof collisionEvent !== 'undefined'
+              console.log(getComponent(activeHoleEntity, TransformComponent).position, )
               console.log('\n\n\n========= ball stopped', outOfBounds, inHole, dist, collisionEvent, '\n')
 
               dispatchFrom(world.hostId, () =>

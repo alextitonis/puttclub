@@ -1,7 +1,7 @@
 import { UserId } from '@xrengine/common/src/interfaces/UserId'
 import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 import { getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
-import { UserdataComponent } from '@xrengine/engine/src/scene/components/UserdataComponent'
+import { GolfTeeComponent } from '../components/GolfTeeComponent'
 import { GolfState } from '../GolfSystem'
 
 export const getGolfPlayerNumber = (userId: UserId = GolfState.currentPlayerId.value) => {
@@ -43,12 +43,12 @@ export function getHole(hole: number) {
 }
 
 interface ITeeParData {
-  data: { par: number }
+  par: number
 }
 
 export const getCoursePar = (currentHole): number => {
   const {
-    data: { par }
-  }: ITeeParData = getComponent(getTee(currentHole), UserdataComponent)
+    par
+  }: ITeeParData = getComponent(getTee(currentHole), GolfTeeComponent)
   return par
 }

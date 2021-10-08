@@ -1,3 +1,7 @@
 import { createMappedComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
 
-export const GolfTeeComponent = createMappedComponent('GolfTeeComponent')
+export type GolfTeeComponentType = {
+  par: number
+}
+
+export const GolfTeeComponent = createMappedComponent<GolfTeeComponentType>('GolfTeeComponent')

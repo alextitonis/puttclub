@@ -127,7 +127,7 @@ function golfReceptor(action) {
 
       // Setup player XR avatars
       .when(NetworkWorldAction.setXRMode.matchesFromAny, (a) => {
-        if (a.$from !== world.hostId || a.$from !== a.userId) return
+        if(!isClient) return
         const entity = world.getUserAvatarEntity(a.userId)
         if (a.enabled) setupPlayerAvatarVR(entity)
         else setupPlayerAvatarNotInVR(entity)

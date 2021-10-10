@@ -18,6 +18,7 @@ const rotateHalfY = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math
 
 export const setupPlayerAvatar = async (entityPlayer: Entity) => {
   if (!isClient) return
+  console.log('setupPlayerAvatar', entityPlayer)
   const avatarComponent = getComponent(entityPlayer, AvatarComponent)
   const { value } = getComponent(entityPlayer, Object3DComponent)
   value.remove(avatarComponent.modelContainer)
@@ -74,9 +75,14 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
 
   golfAvatarComponent.headModel.applyQuaternion(rotateHalfY)
 
-  if (!isEntityLocalClient(entityPlayer)) {
-    xrInputSourceComponent.head.add(golfAvatarComponent.headModel)
-    golfAvatarComponent.headModel.add(golfAvatarComponent.torsoModel)
+  xrInputSourceComponent.head.add(golfAvatarComponent.headModel)
+  golfAvatarComponent.headModel.add(golfAvatarComponent.torsoModel)
+
+  console.log('setupPlayerAvatarVR', entityPlayer)
+  if (isEntityLocalClient(entityPlayer)) {
+    golfAvatarComponent.headModel.traverse((o) => {
+      o.visible = false
+    })
   }
   xrInputSourceComponent.controllerLeft.add(golfAvatarComponent.leftHandModel)
   xrInputSourceComponent.controllerRight.add(golfAvatarComponent.rightHandModel)
@@ -84,6 +90,7 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
 
 export const setupPlayerAvatarNotInVR = (entityPlayer: Entity) => {
   if (!entityPlayer || !hasComponent(entityPlayer, GolfAvatarComponent)) return
+  console.log('setupPlayerAvatarNotInVR', entityPlayer)
   const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
   ;[
     golfAvatarComponent.headModel,

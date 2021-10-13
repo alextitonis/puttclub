@@ -12,9 +12,9 @@ import { setAvatarLayer } from '@xrengine/engine/src/avatar/functions/avatarFunc
 import { generateMeshBVH } from '@xrengine/engine/src/scene/functions/bvhWorkerPool'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
+import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 
 const avatarScale = 1.3
-const rotateHalfY = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI)
 
 export const setupPlayerAvatar = async (entityPlayer: Entity) => {
   if (!isClient) return
@@ -56,15 +56,26 @@ export const setupPlayerAvatar = async (entityPlayer: Entity) => {
 }
 
 export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
-  const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
-  ;[
-    golfAvatarComponent.headModel,
-    golfAvatarComponent.leftHandModel,
-    golfAvatarComponent.rightHandModel,
-    golfAvatarComponent.torsoModel
-  ].forEach((model) => model.removeFromParent())
+  console.log('setupPlayerAvatarVR', entityPlayer)
 
+  const world = useWorld()
+  const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
   const xrInputSourceComponent = getComponent(entityPlayer, XRInputSourceComponent)
+
+  if(xrInputSourceComponent.controllerGripLeft.userData?.mesh){
+    xrInputSourceComponent.controllerGripLeft.userData.mesh.visible = false;
+  }
+
+  if(xrInputSourceComponent.controllerGripRight.userData?.mesh){
+    xrInputSourceComponent.controllerGripRight.userData.mesh.visible = false;
+  }
+
+  xrInputSourceComponent.controllerGripLeft.add(golfAvatarComponent.leftHandModel)
+  xrInputSourceComponent.controllerGripRight.add(golfAvatarComponent.rightHandModel)
+
+  if(entityPlayer !== world.localClientEntity){
+    return
+  }
 
   golfAvatarComponent.headModel.position.set(0, 0, 0)
   golfAvatarComponent.leftHandModel.position.set(0, 0, 0)
@@ -73,32 +84,20 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
   golfAvatarComponent.leftHandModel.scale.setZ(-1)
   golfAvatarComponent.rightHandModel.scale.setZ(-1)
 
-  golfAvatarComponent.headModel.applyQuaternion(rotateHalfY)
-
   xrInputSourceComponent.head.add(golfAvatarComponent.headModel)
   golfAvatarComponent.headModel.add(golfAvatarComponent.torsoModel)
 
-  console.log('setupPlayerAvatarVR', entityPlayer)
   if (isEntityLocalClient(entityPlayer)) {
     golfAvatarComponent.headModel.traverse((o) => {
       o.visible = false
     })
   }
-  xrInputSourceComponent.controllerLeft.add(golfAvatarComponent.leftHandModel)
-  xrInputSourceComponent.controllerRight.add(golfAvatarComponent.rightHandModel)
 }
 
 export const setupPlayerAvatarNotInVR = (entityPlayer: Entity) => {
   if (!entityPlayer || !hasComponent(entityPlayer, GolfAvatarComponent)) return
   console.log('setupPlayerAvatarNotInVR', entityPlayer)
   const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
-  ;[
-    golfAvatarComponent.headModel,
-    golfAvatarComponent.leftHandModel,
-    golfAvatarComponent.rightHandModel,
-    golfAvatarComponent.torsoModel
-  ].forEach((model) => model.removeFromParent())
-
   // TODO: replace pos offset with animation hand position once new animation rig is in
   golfAvatarComponent.headModel.position.set(0, 1.6, 0)
   golfAvatarComponent.leftHandModel.position.set(0.35, 1, 0)

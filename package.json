@@ -11,9 +11,9 @@
     "format-staged": "lint-staged"
   },
   "dependencies": {
-    "@xrengine/engine": "^0.4.8",
-    "@xrengine/common": "^0.4.8",
-    "@xrengine/client-core": "^0.4.8"
+    "@xrengine/engine": "^0.4.9",
+    "@xrengine/common": "^0.4.9",
+    "@xrengine/client-core": "^0.4.9"
   },
   "repository": {
     "type": "git",

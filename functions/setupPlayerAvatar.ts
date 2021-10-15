@@ -12,9 +12,9 @@ import { setAvatarLayer } from '@xrengine/engine/src/avatar/functions/avatarFunc
 import { generateMeshBVH } from '@xrengine/engine/src/scene/functions/bvhWorkerPool'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
-import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 
 const avatarScale = 1.3
+const rotateHalfY = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI)
 
 export const setupPlayerAvatar = async (entityPlayer: Entity) => {
   if (!isClient) return
@@ -58,9 +58,25 @@ export const setupPlayerAvatar = async (entityPlayer: Entity) => {
 export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
   console.log('setupPlayerAvatarVR', entityPlayer)
 
-  const world = useWorld()
   const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
   const xrInputSourceComponent = getComponent(entityPlayer, XRInputSourceComponent)
+
+  golfAvatarComponent.headModel.position.set(0, 0, 0)
+  golfAvatarComponent.leftHandModel.position.set(0, 0, 0)
+  golfAvatarComponent.rightHandModel.position.set(0, 0, 0)
+  golfAvatarComponent.torsoModel.position.set(0, -0.3, 0)
+  golfAvatarComponent.leftHandModel.scale.setZ(-1)
+  golfAvatarComponent.rightHandModel.scale.setZ(-1)
+
+  golfAvatarComponent.headModel.applyQuaternion(rotateHalfY)
+  xrInputSourceComponent.head.add(golfAvatarComponent.headModel)
+  golfAvatarComponent.headModel.add(golfAvatarComponent.torsoModel)
+
+  if (isEntityLocalClient(entityPlayer)) {
+    golfAvatarComponent.headModel.traverse((o) => {
+      o.visible = false
+    })
+  }
 
   if(xrInputSourceComponent.controllerGripLeft.userData?.mesh){
     xrInputSourceComponent.controllerGripLeft.userData.mesh.visible = false;
@@ -72,26 +88,6 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
 
   xrInputSourceComponent.controllerGripLeft.add(golfAvatarComponent.leftHandModel)
   xrInputSourceComponent.controllerGripRight.add(golfAvatarComponent.rightHandModel)
-
-  if(entityPlayer !== world.localClientEntity){
-    return
-  }
-
-  golfAvatarComponent.headModel.position.set(0, 0, 0)
-  golfAvatarComponent.leftHandModel.position.set(0, 0, 0)
-  golfAvatarComponent.rightHandModel.position.set(0, 0, 0)
-  golfAvatarComponent.torsoModel.position.set(0, -0.3, 0)
-  golfAvatarComponent.leftHandModel.scale.setZ(-1)
-  golfAvatarComponent.rightHandModel.scale.setZ(-1)
-
-  xrInputSourceComponent.head.add(golfAvatarComponent.headModel)
-  golfAvatarComponent.headModel.add(golfAvatarComponent.torsoModel)
-
-  if (isEntityLocalClient(entityPlayer)) {
-    golfAvatarComponent.headModel.traverse((o) => {
-      o.visible = false
-    })
-  }
 }
 
 export const setupPlayerAvatarNotInVR = (entityPlayer: Entity) => {

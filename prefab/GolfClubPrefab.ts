@@ -79,7 +79,7 @@ export const updateClub = (entityClub: Entity): void => {
   const world = useWorld()
   const { networkId, userId: ownerId } = getComponent(entityClub, NetworkObjectComponent)
   const ownerEntity = world.getUserAvatarEntity(ownerId)
-  if (typeof ownerEntity === 'undefined') return
+  if (ownerEntity === undefined) return
 
   const golfClubComponent = getComponent(entityClub, GolfClubComponent)
 

@@ -61,6 +61,8 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
   const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
   const xrInputSourceComponent = getComponent(entityPlayer, XRInputSourceComponent)
 
+  xrInputSourceComponent.container.position.set(0, 0.35, 0)
+
   golfAvatarComponent.headModel.position.set(0, 0, 0)
   golfAvatarComponent.leftHandModel.position.set(0, 0, 0)
   golfAvatarComponent.rightHandModel.position.set(0, 0, 0)
@@ -94,6 +96,7 @@ export const setupPlayerAvatarNotInVR = (entityPlayer: Entity) => {
   if (!entityPlayer || !hasComponent(entityPlayer, GolfAvatarComponent)) return
   console.log('setupPlayerAvatarNotInVR', entityPlayer)
   const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
+
   // TODO: replace pos offset with animation hand position once new animation rig is in
   golfAvatarComponent.headModel.position.set(0, 1.6, 0)
   golfAvatarComponent.leftHandModel.position.set(0.35, 1, 0)

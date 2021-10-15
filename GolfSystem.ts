@@ -355,7 +355,7 @@ export default async function GolfSystem(world: World) {
       const ownerEntity = getPlayerEntityFromNumber(number)
       updateClub(entity)
       // we only need to detect hits for our own club
-      if (typeof ownerEntity !== 'undefined' && isEntityLocalClient(ownerEntity)) {
+      if (ownerEntity !== undefined && isEntityLocalClient(ownerEntity)) {
         if (getCurrentGolfPlayerEntity() === ownerEntity) {
           const currentPlayerId = GolfState.currentPlayerId.value
           const entityBall = getBall(currentPlayerId)
@@ -390,7 +390,7 @@ export default async function GolfSystem(world: World) {
 
     const currentPlayerId = GolfState.currentPlayerId.value
     const activeBallEntity = getBall(currentPlayerId)
-    if (typeof activeBallEntity !== 'undefined') {
+    if (activeBallEntity !== undefined) {
       const golfBallComponent = getComponent(activeBallEntity, GolfBallComponent)
       updateBall(activeBallEntity)
 

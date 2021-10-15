@@ -88,7 +88,8 @@ export const updateClub = (entityClub: Entity): void => {
 
   const { position, rotation } = getHandTransform(ownerEntity)
 
-  transformClub.position.copy(position)
+  vector0.set(0.035, 0, 0).applyQuaternion(rotation) // Offset from the hand
+  transformClub.position.copy(position).add(vector0)
   transformClub.rotation.copy(rotation)
 
   golfClubComponent.raycast.origin.copy(position)

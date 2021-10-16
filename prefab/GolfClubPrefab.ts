@@ -79,24 +79,24 @@ export const updateClub = (entityClub: Entity): void => {
   const world = useWorld()
   const { networkId, userId: ownerId } = getComponent(entityClub, NetworkObjectComponent)
   const ownerEntity = world.getUserAvatarEntity(ownerId)
-  if (typeof ownerEntity === 'undefined') return
+  if (ownerEntity === undefined) return
 
   const golfClubComponent = getComponent(entityClub, GolfClubComponent)
 
   const transformClub = getComponent(entityClub, TransformComponent)
   const collider = getComponent(entityClub, ColliderComponent)
 
-  const handTransform = getHandTransform(ownerEntity)
-  const { position, rotation } = handTransform
+  const { position, rotation } = getHandTransform(ownerEntity)
 
-  transformClub.position.copy(position)
+  vector0.set(0.035, 0, 0).applyQuaternion(rotation) // Offset from the hand
+  transformClub.position.copy(position).add(vector0)
   transformClub.rotation.copy(rotation)
 
   golfClubComponent.raycast.origin.copy(position)
   golfClubComponent.raycast.direction.set(0, 0, -1).applyQuaternion(rotation)
   world.physics.doRaycast(golfClubComponent.raycast)
 
-  const hit = golfClubComponent.raycast.hits[0]
+  // const hit = golfClubComponent.raycast.hits[0]
 
   const headDistance = clubLength //!hit?.distance ? clubLength : Math.min(hit.distance, clubLength)
 
@@ -111,7 +111,7 @@ export const updateClub = (entityClub: Entity): void => {
   golfClubComponent.raycast1.direction.set(0, 0, -1).applyQuaternion(rotation)
   world.physics.doRaycast(golfClubComponent.raycast1)
 
-  const hit1 = golfClubComponent.raycast1.hits[0]
+  // const hit1 = golfClubComponent.raycast1.hits[0]
 
   // if (hit && hit1) {
   //   // Update the head's up direction using ground normal

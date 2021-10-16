@@ -56,15 +56,12 @@ export const setupPlayerAvatar = async (entityPlayer: Entity) => {
 }
 
 export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
-  const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
-  ;[
-    golfAvatarComponent.headModel,
-    golfAvatarComponent.leftHandModel,
-    golfAvatarComponent.rightHandModel,
-    golfAvatarComponent.torsoModel
-  ].forEach((model) => model.removeFromParent())
+  console.log('setupPlayerAvatarVR', entityPlayer)
 
+  const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
   const xrInputSourceComponent = getComponent(entityPlayer, XRInputSourceComponent)
+
+  xrInputSourceComponent.container.position.set(0, 0.35, 0)
 
   golfAvatarComponent.headModel.position.set(0, 0, 0)
   golfAvatarComponent.leftHandModel.position.set(0, 0, 0)
@@ -74,30 +71,31 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
   golfAvatarComponent.rightHandModel.scale.setZ(-1)
 
   golfAvatarComponent.headModel.applyQuaternion(rotateHalfY)
-
   xrInputSourceComponent.head.add(golfAvatarComponent.headModel)
   golfAvatarComponent.headModel.add(golfAvatarComponent.torsoModel)
 
-  console.log('setupPlayerAvatarVR', entityPlayer)
   if (isEntityLocalClient(entityPlayer)) {
     golfAvatarComponent.headModel.traverse((o) => {
       o.visible = false
     })
   }
-  xrInputSourceComponent.controllerLeft.add(golfAvatarComponent.leftHandModel)
-  xrInputSourceComponent.controllerRight.add(golfAvatarComponent.rightHandModel)
+
+  if(xrInputSourceComponent.controllerGripLeft.userData?.mesh){
+    xrInputSourceComponent.controllerGripLeft.userData.mesh.visible = false;
+  }
+
+  if(xrInputSourceComponent.controllerGripRight.userData?.mesh){
+    xrInputSourceComponent.controllerGripRight.userData.mesh.visible = false;
+  }
+
+  xrInputSourceComponent.controllerGripLeft.add(golfAvatarComponent.leftHandModel)
+  xrInputSourceComponent.controllerGripRight.add(golfAvatarComponent.rightHandModel)
 }
 
 export const setupPlayerAvatarNotInVR = (entityPlayer: Entity) => {
   if (!entityPlayer || !hasComponent(entityPlayer, GolfAvatarComponent)) return
   console.log('setupPlayerAvatarNotInVR', entityPlayer)
   const golfAvatarComponent = getComponent(entityPlayer, GolfAvatarComponent)
-  ;[
-    golfAvatarComponent.headModel,
-    golfAvatarComponent.leftHandModel,
-    golfAvatarComponent.rightHandModel,
-    golfAvatarComponent.torsoModel
-  ].forEach((model) => model.removeFromParent())
 
   // TODO: replace pos offset with animation hand position once new animation rig is in
   golfAvatarComponent.headModel.position.set(0, 1.6, 0)

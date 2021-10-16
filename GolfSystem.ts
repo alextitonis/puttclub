@@ -350,7 +350,6 @@ export default async function GolfSystem(world: World) {
 
   return () => {
     for (const entity of golfClubQuery()) {
-      const { networkId } = getComponent(entity, NetworkObjectComponent)
       const { number } = getComponent(entity, GolfClubComponent)
       const ownerEntity = getPlayerEntityFromNumber(number)
       updateClub(entity)
@@ -359,7 +358,7 @@ export default async function GolfSystem(world: World) {
         if (getCurrentGolfPlayerEntity() === ownerEntity) {
           const currentPlayerId = GolfState.currentPlayerId.value
           const entityBall = getBall(currentPlayerId)
-          if (entityBall && getComponent(entityBall, NetworkObjectComponent).networkId === networkId) {
+          if (entityBall) {
             const { collisionEntity } = getCollisions(entity, GolfBallComponent)
             if (collisionEntity !== null && collisionEntity === entityBall) {
               const golfBallComponent = getComponent(entityBall, GolfBallComponent)

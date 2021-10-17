@@ -1,6 +1,7 @@
 {
   "name": "puttclub",
   "version": "0.0.1",
+  "routes": [],
   "moduleEntryPoints": [
     "GolfSystem.ts",
     "GolfXRUISystem.ts"

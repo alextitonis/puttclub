@@ -8,7 +8,7 @@ import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { World } from '@xrengine/engine/src/ecs/classes/World'
 import { AssetLoader } from '@xrengine/engine/src/assets/classes/AssetLoader'
 import { GolfAction } from './GolfAction'
-import { dispatchFrom } from '@xrengine/engine/src/networking/functions/dispatchFrom'
+import { dispatchFrom, dispatchLocal } from '@xrengine/engine/src/networking/functions/dispatchFrom'
 import { createState, Downgraded } from '@hookstate/core'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
 import { NetworkObjectComponent } from '@xrengine/engine/src/networking/components/NetworkObjectComponent'
@@ -365,7 +365,7 @@ export default async function GolfSystem(world: World) {
               if (golfBallComponent.state === BALL_STATES.WAITING) {
                 hitBall(entity, entityBall)
                 setBallState(entityBall, BALL_STATES.MOVING)
-                dispatchFrom(world.hostId, () => GolfAction.playerStroke({}))
+                dispatchLocal(GolfAction.playerStroke({}))
               }
             }
           }

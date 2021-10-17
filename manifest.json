@@ -2,6 +2,7 @@
   "name": "puttclub",
   "version": "0.0.1",
   "routes": [],
+  "thumbnailUrl": "https://imgur.com/Spyv0Fv.png",
   "moduleEntryPoints": [
     "GolfSystem.ts",
     "GolfXRUISystem.ts"

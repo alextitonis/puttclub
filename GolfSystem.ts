@@ -332,7 +332,7 @@ globalThis.GolfState = GolfState
 let ballTimer = 0
 
 export default async function GolfSystem(world: World) {
-  world.receptors.add(golfReceptor)
+  world.receptors.push(golfReceptor)
 
   const namedComponentQuery = defineQuery([NameComponent])
   const golfClubQuery = defineQuery([GolfClubComponent])
@@ -354,7 +354,7 @@ export default async function GolfSystem(world: World) {
       const ownerEntity = getPlayerEntityFromNumber(number)
       updateClub(entity)
       // we only need to detect hits for our own club
-      if (ownerEntity !== undefined && isEntityLocalClient(ownerEntity)) {
+      if (isEntityLocalClient(ownerEntity)) {
         if (getCurrentGolfPlayerEntity() === ownerEntity) {
           const currentPlayerId = GolfState.currentPlayerId.value
           const entityBall = getBall(currentPlayerId)

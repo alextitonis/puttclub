@@ -11,7 +11,6 @@ import { GolfAction } from './GolfAction'
 import { dispatchFrom, dispatchLocal } from '@xrengine/engine/src/networking/functions/dispatchFrom'
 import { createState, Downgraded } from '@hookstate/core'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
-import { NetworkObjectComponent } from '@xrengine/engine/src/networking/components/NetworkObjectComponent'
 import { addComponent, defineQuery, getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
 import { BALL_STATES, initializeGolfBall, resetBall, setBallState, updateBall } from './prefab/GolfBallPrefab'
 import { initializeGolfClub, updateClub } from './prefab/GolfClubPrefab'
@@ -365,7 +364,7 @@ export default async function GolfSystem(world: World) {
               if (golfBallComponent.state === BALL_STATES.WAITING) {
                 hitBall(entity, entityBall)
                 setBallState(entityBall, BALL_STATES.MOVING)
-                dispatchLocal(GolfAction.playerStroke({}))
+                dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}) )
               }
             }
           }

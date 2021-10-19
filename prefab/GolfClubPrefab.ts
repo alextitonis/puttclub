@@ -88,6 +88,7 @@ export const updateClub = (entityClub: Entity): void => {
 
   const { position, rotation } = getHandTransform(ownerEntity)
 
+  // TODO: Add a sign (-/+) to the offset for each hand, right now it is assumed to be the left hand
   vector0.set(0.035, 0, 0).applyQuaternion(rotation) // Offset from the hand
   transformClub.position.copy(position).add(vector0)
   transformClub.rotation.copy(rotation)

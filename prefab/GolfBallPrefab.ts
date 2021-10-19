@@ -105,6 +105,7 @@ export const setBallState = (entityBall: Entity, ballState: BALL_STATES) => {
         return
       }
       case BALL_STATES.IN_HOLE: {
+        ballGroup.userData.indicatorMesh.visible = false
         addComponent(entityBall, PlaySoundEffect, { index: BALL_SFX.IN_HOLE, volume: 1 })
         return
       }
@@ -126,8 +127,19 @@ export const resetBall = (entityBall: Entity, position: number[]) => {
       },
       true
     )
-    collider.body.setLinearVelocity({ x: 0, y: 0, z: 0 }, true)
-    collider.body.setAngularVelocity({ x: 0, y: 0, z: 0 }, true)
+
+    if(typeof collider.body.setLinearVelocity != 'function'){
+      console.error('setLinearVelocity is not defined on ball entity', entityBall)
+    }else{
+      collider.body.setLinearVelocity({ x: 0, y: 0, z: 0 }, true)
+    }
+
+    if(typeof collider.body.setAngularVelocity != 'function'){
+      console.error('setAngularVelocity is not defined on ball entity', entityBall)
+    }else{
+      collider.body.setAngularVelocity({ x: 0, y: 0, z: 0 }, true)
+    }
+
   } else {
     const transform = getComponent(entityBall, TransformComponent)
     transform.position.fromArray(position)

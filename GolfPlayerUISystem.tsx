@@ -2,7 +2,7 @@ import React from 'react'
 import { Color, Vector3, Quaternion, Matrix4 } from 'three'
 import { createState } from '@hookstate/core'
 
-import { useUserState } from '@xrengine/client-core/src/user/store/UserState'
+import { useUserState } from '@xrengine/client-core/src/user/state/UserState'
 import { createXRUI } from '@xrengine/engine/src/xrui/functions/createXRUI'
 import { useXRUIState } from '@xrengine/engine/src/xrui/functions/useXRUIState'
 import { addComponent, defineQuery, getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'

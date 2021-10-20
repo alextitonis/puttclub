@@ -1,40 +1,37 @@
+import { AssetLoader } from '@xrengine/engine/src/assets/classes/AssetLoader'
+import { PlaySoundEffect } from '@xrengine/engine/src/audio/components/PlaySoundEffect'
+import { SoundEffect } from '@xrengine/engine/src/audio/components/SoundEffect'
+import { isClient } from '@xrengine/engine/src/common/functions/isClient'
+import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { Entity } from '@xrengine/engine/src/ecs/classes/Entity'
+import { addComponent, getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
+import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
+import { ColliderComponent } from '@xrengine/engine/src/physics/components/ColliderComponent'
+import { CollisionComponent } from '@xrengine/engine/src/physics/components/CollisionComponent'
+import { RaycastComponentType } from '@xrengine/engine/src/physics/components/RaycastComponent'
+import { VelocityComponent } from '@xrengine/engine/src/physics/components/VelocityComponent'
+import { CollisionGroups } from '@xrengine/engine/src/physics/enums/CollisionGroups'
+import { BodyType, ColliderHitEvent, SceneQueryType } from '@xrengine/engine/src/physics/types/PhysicsTypes'
+import { OffScreenIndicator } from '@xrengine/engine/src/scene/classes/OffScreenIndicator'
+import TrailRenderer from '@xrengine/engine/src/scene/classes/TrailRenderer'
+import { NameComponent } from '@xrengine/engine/src/scene/components/NameComponent'
+import { Object3DComponent } from '@xrengine/engine/src/scene/components/Object3DComponent'
+import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import {
-  Color,
-  Group,
+  Color, ConeGeometry, Group,
   Material,
   Mesh,
   MeshBasicMaterial,
   MeshPhongMaterial,
   Quaternion,
   Vector3,
-  Vector4,
-  ConeGeometry
+  Vector4
 } from 'three'
-import { AssetLoader } from '@xrengine/engine/src/assets/classes/AssetLoader'
-import { isClient } from '@xrengine/engine/src/common/functions/isClient'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
-import { Entity } from '@xrengine/engine/src/ecs/classes/Entity'
-import { addComponent, getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
-import { isEntityLocalClient } from '@xrengine/engine/src/networking/functions/isEntityLocalClient'
-import { ColliderComponent } from '@xrengine/engine/src/physics/components/ColliderComponent'
-import { VelocityComponent } from '@xrengine/engine/src/physics/components/VelocityComponent'
-import { CollisionGroups } from '@xrengine/engine/src/physics/enums/CollisionGroups'
-import TrailRenderer from '@xrengine/engine/src/scene/classes/TrailRenderer'
-import { Object3DComponent } from '@xrengine/engine/src/scene/components/Object3DComponent'
-import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import { GolfBallComponent } from '../components/GolfBallComponent'
 import { getGolfPlayerNumber, getTee } from '../functions/golfFunctions'
+import { GolfAction } from '../GolfAction'
 import { GolfCollisionGroups, GolfColours } from '../GolfGameConstants'
 import { GolfState } from '../GolfSystem'
-import { NameComponent } from '@xrengine/engine/src/scene/components/NameComponent'
-import { OffScreenIndicator } from '@xrengine/engine/src/scene/classes/OffScreenIndicator'
-import { SoundEffect } from '@xrengine/engine/src/audio/components/SoundEffect'
-import { PlaySoundEffect } from '@xrengine/engine/src/audio/components/PlaySoundEffect'
-import { GolfAction } from '../GolfAction'
-import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
-import { BodyType, ColliderHitEvent, SceneQueryType } from '@xrengine/engine/src/physics/types/PhysicsTypes'
-import { RaycastComponentType } from '@xrengine/engine/src/physics/components/RaycastComponent'
-import { CollisionComponent } from '@xrengine/engine/src/physics/components/CollisionComponent'
 
 /**
  * @author Josh Field <github.com/HexaField>
@@ -66,7 +63,7 @@ enum BALL_SFX {
 }
 
 export const setBallState = (entityBall: Entity, ballState: BALL_STATES) => {
-  if (typeof entityBall === 'undefined') return
+  if (entityBall === undefined) return
   const golfBallComponent = getComponent(entityBall, GolfBallComponent)
   console.log('setBallState', golfBallComponent.number, Object.values(BALL_STATES)[ballState])
   golfBallComponent.state = ballState
@@ -128,18 +125,9 @@ export const resetBall = (entityBall: Entity, position: number[]) => {
       true
     )
 
-    if(typeof collider.body.setLinearVelocity != 'function'){
-      console.error('setLinearVelocity is not defined on ball entity', entityBall)
-    }else{
-      collider.body.setLinearVelocity({ x: 0, y: 0, z: 0 }, true)
-    }
-
-    if(typeof collider.body.setAngularVelocity != 'function'){
-      console.error('setAngularVelocity is not defined on ball entity', entityBall)
-    }else{
-      collider.body.setAngularVelocity({ x: 0, y: 0, z: 0 }, true)
-    }
-
+    collider.body.setLinearVelocity({ x: 0, y: 0, z: 0 }, true)
+    collider.body.setAngularVelocity({ x: 0, y: 0, z: 0 }, true)
+    
   } else {
     const transform = getComponent(entityBall, TransformComponent)
     transform.position.fromArray(position)
@@ -380,12 +368,10 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
       CollisionGroups.Default | CollisionGroups.Ground | GolfCollisionGroups.Course | GolfCollisionGroups.Hole
   })
 
-  const isMyBall = isEntityLocalClient(ownerEntity)
-
   const body = world.physics.addBody({
     shapes: [shape],
     // make static on server and remote player's balls so we can still detect collision with hole
-    type: isMyBall ? BodyType.DYNAMIC : BodyType.STATIC,
+    type: BodyType.DYNAMIC,
     transform: {
       translation: transform.position,
       rotation: new Quaternion()

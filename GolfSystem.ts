@@ -152,11 +152,18 @@ function golfReceptor(action) {
        */
       .when(GolfAction.spawnBall.matches, (action) => {
         console.log('MAKING BALL')
-        const eid = initializeGolfBall(action)
+
+        let entityBall = getBall(action.userId)
+        if(entityBall){
+          console.warn('The ball entity already exist for user', action.userId)
+        }else{
+          entityBall = initializeGolfBall(action)
+        }
+
         if (GolfState.currentPlayerId.value === action.userId) {
-          setBallState(eid, BALL_STATES.WAITING)
+          setBallState(entityBall, BALL_STATES.WAITING)
         } else {
-          setBallState(eid, BALL_STATES.INACTIVE)
+          setBallState(entityBall, BALL_STATES.INACTIVE)
         }
       })
 

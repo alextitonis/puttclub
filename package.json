@@ -4,7 +4,6 @@
   "description": "",
   "main": "",
   "scripts": {
-    "update-files": "node update-files.js",
     "check": "tsc --noEmit",
     "lint": "prettier --check \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx}\"",

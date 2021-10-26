@@ -9,13 +9,15 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "format-staged": "lint-staged"
   },
-  "dependencies": {
-    "@xrengine/engine": "^0.4.9",
-    "@xrengine/common": "^0.4.9",
-    "@xrengine/client-core": "^0.4.9"
+  "dependencies": {},
+  "peerDependencies":{
+    "@xrengine/engine": "^0.4.10",
+    "@xrengine/common": "^0.4.10",
+    "@xrengine/client-core": "^0.4.10",
+    "@xrengine/client": "^0.4.10"
   },
   "xrengine": {
-    "routes": [],
+    "routes": ["/"],
     "thumbnail": "https://imgur.com/Spyv0Fv.png",
     "moduleEntryPoints": [
       "GolfSystem.ts",

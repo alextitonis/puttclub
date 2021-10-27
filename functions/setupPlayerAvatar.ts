@@ -24,9 +24,9 @@ export const setupPlayerAvatar = async (entityPlayer: Entity) => {
   value.remove(avatarComponent.modelContainer)
   avatarComponent.modelContainer.children.forEach((child) => child.removeFromParent())
 
-  const { scene: headGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/models/golf/avatars/avatar_head.glb')
-  const { scene: handGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/models/golf/avatars/avatar_hands.glb')
-  const { scene: torsoGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/models/golf/avatars/avatar_torso.glb')
+  const { scene: headGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_head.glb')
+  const { scene: handGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_hands.glb')
+  const { scene: torsoGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_torso.glb')
 
   const headModel = SkeletonUtils.clone(headGLTF)
   headModel.scale.multiplyScalar(avatarScale)

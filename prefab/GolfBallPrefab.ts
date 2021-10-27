@@ -342,7 +342,7 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
 
   if (isClient) {
     // addComponent(ballEntity, InterpolationComponent, {})
-    const gltf = AssetLoader.getFromCache(Engine.publicPath + '/models/golf/golf_ball.glb')
+    const gltf = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/golf_ball.glb')
     assetLoadCallback(gltf.scene, ballEntity, playerNumber)
 
     addComponent(ballEntity, SoundEffect, {

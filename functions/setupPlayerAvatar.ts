@@ -1,6 +1,6 @@
 import { AssetLoader } from '@xrengine/engine/src/assets/classes/AssetLoader'
 import { AvatarComponent } from '@xrengine/engine/src/avatar/components/AvatarComponent'
-import { XRInputSourceComponent } from '@xrengine/engine/src/avatar/components/XRInputSourceComponent'
+import { XRInputSourceComponent } from '@xrengine/engine/src/xr/components/XRInputSourceComponent'
 import { SkeletonUtils } from '@xrengine/engine/src/avatar/SkeletonUtils'
 import { Entity } from '@xrengine/engine/src/ecs/classes/Entity'
 import { addComponent, getComponent, hasComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'

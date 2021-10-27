@@ -347,9 +347,9 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
 
     addComponent(ballEntity, SoundEffect, {
       src: [
-        Engine.publicPath + '/audio/golf/golf_ball_strike.mp3',
-        Engine.publicPath + '/audio/golf/golf_ball_drop.wav',
-        Engine.publicPath + '/audio/golf/golf_ball_hit_wall.wav'
+        Engine.publicPath + '/projects/puttclub/audio/golf_ball_strike.mp3',
+        Engine.publicPath + '/projects/puttclub/audio/golf_ball_drop.wav',
+        Engine.publicPath + '/projects/puttclub/audio/golf_ball_hit_wall.wav'
       ],
       audio: []
     })

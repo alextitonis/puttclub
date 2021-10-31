@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import World from '@xrengine/client/src/components/World/index'
-import AvatarInputSwitch from './components/AvatarInputSwitch/AvatarInputSwitch'
+import AvatarInputSwitch from '@xrengine/client-core/src/world/components/Avatar/AvatarInputSwitch'
 import { EngineEvents } from '@xrengine/engine/src/ecs/classes/EngineEvents'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import PlayButton from './components/PlayButton/PlayButton'

@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { GolfBotHooks } from '@xrengine/client/src/pages/golf/functions/GolfBotHooks'
+import { GolfBotHooks } from '../../functions/GolfBotHooks'
 import { BotHooks } from '@xrengine/engine/src/bot/enums/BotHooks'
 import { XREngineBot } from '@xrengine/bot/src/bot'
 

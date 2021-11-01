@@ -1,5 +1,5 @@
 import { State, useState } from '@hookstate/core'
-import { useUserState } from '@xrengine/client-core/src/user/state/UserState'
+import { useUserState } from '@xrengine/client-core/src/user/services/UserService'
 import { World } from '@xrengine/engine/src/ecs/classes/World'
 import { Entity } from '@xrengine/engine/src/ecs/classes/Entity'
 import { getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'

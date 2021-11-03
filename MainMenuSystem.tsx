@@ -45,66 +45,55 @@ const styles = {
     gridTemplateColumns: "1fr 1fr 1fr",
   },
   leftContainer: {
+    margin: "20px",
     padding: "20px",
-    display: "flex",
+    display: "grid",
+    gridGap: "10px",
     overflow: "visible",
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-  },
-  leftButtonsContainer: {
-    width: "90%",
-    height: "90%",
-    display: "grid",
-    gridGap: "20px",
-    padding: "20px",
-    tranform: "rotateY(15deg)",
     gridTemplateColumns: "1fr",
+    transform: "rotateY(15deg)",
     backgroundColor: GreyBackground,
   },
   leftButton: {
-    width: "90%",
+    margin: "0px 20px",
     fontSize: "22px",
     cursor: "pointer",
     fontWeight: "bold",
     background: "black",
     color: OrangeYellow,
-    padding: "20px 12px",
+    padding: "20px 5px",
     transform: "rotateY(28deg)",
     border: `solid 1px ${GreyBorder}`,
   },
   rightContainer: {
+    margin: "20px",
     padding: "20px",
-    display: "flex",
+    display: "grid",
+    gridGap: "10px",
     overflow: "visible",
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-  },
-  rightButtonsContainer: {
-    width: "90%",
-    height: "90%",
-    display: "grid",
-    gridGap: "20px",
-    padding: "20px",
-    transform: "rotateY(-44deg)",
     gridTemplateColumns: "1fr",
+    transform: "rotateY(-15deg)",
     backgroundColor: GreyBackground,
   },
   rightButton: {
+    margin: "0px 20px",
     fontSize: "22px",
     cursor: "pointer",
     fontWeight: "bold",
     background: "black",
     color: OrangeYellow,
-    padding: "20px 12px",
+    padding: "20px 5px",
     transform: "rotateY(-28deg)",
     border: `solid 1px ${GreyBorder}`,
   },
   centerMenuContainer: {
     display: "grid",
     gridGap: "15px",
-    margin: "20px 0px 0px",
+    margin: "20px 0px",
     gridTemplateColumns: "1fr 1fr 1fr",
   },
   courseContainer: {
@@ -144,12 +133,10 @@ export const MainMenu = () => {
         </div>
         <div xr-layer="true" style={styles.menuContainer}>
           <div xr-layer="true" style={styles.leftContainer}>
-            <div xr-layer="true" style={styles.leftButtonsContainer}>
-              <button xr-layer="true" style={styles.leftButton}>Single Player</button>
-              <button xr-layer="true" style={styles.leftButton}>Multi Player</button>
-              <button xr-layer="true" style={styles.leftButton}>Quick Match</button>
-              <button xr-layer="true" style={styles.leftButton}>Private Game</button>
-            </div>
+            <button xr-layer="true" style={styles.leftButton}>Single Player</button>
+            <button xr-layer="true" style={styles.leftButton}>Multi Player</button>
+            <button xr-layer="true" style={styles.leftButton}>Quick Match</button>
+            <button xr-layer="true" style={styles.leftButton}>Private Game</button>
           </div>
           <div xr-layer="true" style={styles.centerMenuContainer}>
             <div xr-layer="true" style={styles.courseContainer}>
@@ -169,12 +156,10 @@ export const MainMenu = () => {
             </div>
           </div>
           <div xr-layer="true" style={styles.rightContainer}>
-            <div xr-layer="true" style={styles.rightButtonsContainer}>
-              <button xr-layer="true" style={styles.rightButton}>Play Round</button>
-              <button xr-layer="true" style={styles.rightButton}>Front 9</button>
-              <button xr-layer="true" style={styles.rightButton}>Back 9</button>
-              <button xr-layer="true" style={styles.rightButton}>Practice</button>
-            </div>
+            <button xr-layer="true" style={styles.rightButton}>Play Round</button>
+            <button xr-layer="true" style={styles.rightButton}>Front 9</button>
+            <button xr-layer="true" style={styles.rightButton}>Back 9</button>
+            <button xr-layer="true" style={styles.rightButton}>Practice</button>
           </div>
         </div>
       </div>

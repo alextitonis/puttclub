@@ -26,6 +26,7 @@ const styles = {
   },
   menuSection: {
     display: "flex",
+    margin: "20px 0px",
     flexDirection: "column",
   },
   logoContainer: {
@@ -41,76 +42,100 @@ const styles = {
   menuContainer: {
     display: "grid",
     gridGap: "20px",
-    margin: "20px auto",
     gridTemplateColumns: "1fr 1fr 1fr",
   },
   leftContainer: {
     padding: "20px",
-    backgroundColor: GreyBackground,
+    display: "flex",
+    overflow: "visible",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   leftButtonsContainer: {
+    width: "90%",
+    height: "90%",
     display: "grid",
     gridGap: "20px",
+    padding: "20px",
+    tranform: "rotateY(15deg)",
     gridTemplateColumns: "1fr",
+    backgroundColor: GreyBackground,
   },
   leftButton: {
-    fontSize: "14px",
+    width: "90%",
+    fontSize: "22px",
     cursor: "pointer",
     fontWeight: "bold",
-    padding: "12px 35px",
     background: "black",
     color: OrangeYellow,
+    padding: "20px 12px",
+    transform: "rotateY(28deg)",
     border: `solid 1px ${GreyBorder}`,
   },
   rightContainer: {
     padding: "20px",
-    backgroundColor: GreyBackground,
+    display: "flex",
+    overflow: "visible",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   rightButtonsContainer: {
+    width: "90%",
+    height: "90%",
     display: "grid",
     gridGap: "20px",
+    padding: "20px",
+    transform: "rotateY(-44deg)",
     gridTemplateColumns: "1fr",
+    backgroundColor: GreyBackground,
   },
   rightButton: {
-    fontSize: "14px",
+    fontSize: "22px",
     cursor: "pointer",
     fontWeight: "bold",
-    padding: "12px 35px",
     background: "black",
     color: OrangeYellow,
+    padding: "20px 12px",
+    transform: "rotateY(-28deg)",
     border: `solid 1px ${GreyBorder}`,
   },
   centerMenuContainer: {
     display: "grid",
-    gridGap: "10px",
+    gridGap: "15px",
+    margin: "20px 0px 0px",
     gridTemplateColumns: "1fr 1fr 1fr",
   },
   courseContainer: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
   },
   courseImage: {
-    flex: 1
+    flex: 1,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
   footerContainer: {
     left: "20px",
-    bottom: "20px",
+    bottom: "0px",
     display: "flex",
     position: "absolute",
   },
   footerButton: {
-    fontSize: "14px",
+    fontSize: "18px",
     cursor: "pointer",
     fontWeight: "bold",
     borderRadius: "5px",
-    padding: "12px 35px",
     background: "black",
     color: OrangeYellow,
-    border: `solid 3px ${OrangeYellow}`,
+    padding: "12px 35px",
+    border: `solid 5px ${OrangeYellow}`,
   }
 }
 
-const MainMenu = () => {
+export const MainMenu = () => {
   return (
     <div xr-layer="true" style={styles.mainMenuContainer}>
       <div xr-layer="true" style={styles.menuSection}>

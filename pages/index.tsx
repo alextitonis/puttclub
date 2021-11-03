@@ -8,6 +8,7 @@ import PlayButton from './components/PlayButton/PlayButton'
 export const HomePage = (props): any => {
   const [joinedWorld, setJoinedWorld] = useState(false)
   const [inputsEnabled, setInputsEnabled] = useState(false)
+  const [showStartButton, setShowStartButton] = useState(true)
 
   EngineEvents.instance.once(EngineEvents.EVENTS.JOINED_WORLD, () => {
     setTimeout(() => {
@@ -15,7 +16,8 @@ export const HomePage = (props): any => {
     }, 1000)
   })
 
-  const handlePlayNowClick = () => {
+  const handleClickPlayButton = () => {
+    setShowStartButton(false);
     if (!joinedWorld) return
 
     setInputsEnabled(true)
@@ -26,7 +28,7 @@ export const HomePage = (props): any => {
 
   return (
     <>
-      {!inputsEnabled ? <PlayButton onclick={handlePlayNowClick} /> : <></>}
+      {showStartButton && <PlayButton onclick={handleClickPlayButton} />}
       <World locationName="golf" history={props.history} connectToInstanceServer={false} />
       <AvatarInputSwitch enabled={inputsEnabled} joinedWorld={joinedWorld} />
     </>

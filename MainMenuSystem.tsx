@@ -1,5 +1,4 @@
 import React from 'react'
-import { Vector3 } from 'three'
 
 import { GolfState } from './GolfSystem'
 import { World } from '@xrengine/engine/src/ecs/classes/World'

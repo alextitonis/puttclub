@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { useState } from '@hookstate/core'
 import { GolfState } from './GolfSystem'
 import { World } from '@xrengine/engine/src/ecs/classes/World'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
@@ -44,72 +44,95 @@ const styles = {
     gridTemplateColumns: "1fr 1fr 1fr",
   },
   leftContainer: {
-    margin: "20px",
-    padding: "20px",
-    display: "grid",
-    gridGap: "10px",
-    overflow: "visible",
+    display: "flex",
+    flexDirection: "row",
     alignItems: "center",
+    position: "relative",
     justifyContent: "center",
-    gridTemplateColumns: "1fr",
+  },
+  leftContainerImg: {
+    width: "100%",
+    position: "absolute",
+  },
+  leftButtonsContainer: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "center",
     transform: "rotateY(15deg)",
-    backgroundColor: GreyBackground,
   },
   leftButton: {
-    margin: "0px 20px",
+    width: "65%",
     fontSize: "22px",
     cursor: "pointer",
     fontWeight: "bold",
     background: "black",
     color: OrangeYellow,
     padding: "20px 5px",
+    marginBottom: "20px",
     transform: "rotateY(28deg)",
     border: `solid 1px ${GreyBorder}`,
   },
   rightContainer: {
-    margin: "20px",
-    padding: "20px",
-    display: "grid",
-    gridGap: "10px",
-    overflow: "visible",
+    display: "flex",
+    flexDirection: "row",
     alignItems: "center",
+    position: "relative",
     justifyContent: "center",
-    gridTemplateColumns: "1fr",
+  },
+  rightContainerImg: {
+    width: "100%",
+    position: "absolute",
+  },
+  rightButtonsContainer: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "center",
     transform: "rotateY(-15deg)",
-    backgroundColor: GreyBackground,
   },
   rightButton: {
-    margin: "0px 20px",
+    width: "65%",
     fontSize: "22px",
     cursor: "pointer",
     fontWeight: "bold",
     background: "black",
     color: OrangeYellow,
     padding: "20px 5px",
+    marginBottom: "20px",
     transform: "rotateY(-28deg)",
     border: `solid 1px ${GreyBorder}`,
   },
   centerMenuContainer: {
     display: "grid",
     gridGap: "15px",
-    margin: "20px 0px",
     gridTemplateColumns: "1fr 1fr 1fr",
   },
   courseContainer: {
     display: "flex",
-    flexDirection: "row",
-  },
-  courseImage: {
-    flex: 1,
-    display: "flex",
+    cursor: "pointer",
+    position: "relative",
     flexDirection: "row",
     alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  courseImage: {
+    width: "100%",
+  },
+  courseText: {
+    left: "30%",
+    bottom: "25px",
+    fontSize: "28px",
+    fontWeight: "bold",
+    textAlign: "center",
+    color: OrangeYellow,
+    position: "absolute",
   },
   footerContainer: {
-    left: "20px",
-    bottom: "0px",
     display: "flex",
-    position: "absolute",
+    marginTop: "50px",
   },
   footerButton: {
     fontSize: "18px",
@@ -124,6 +147,21 @@ const styles = {
 }
 
 export const MainMenu = () => {
+  const courses = [
+    {
+      name: "Course-1",
+      imagePath: "/projects/puttclub/assets/course1.svg",
+    },
+    {
+      name: "Course-2",
+      imagePath: "/projects/puttclub/assets/course2.svg",
+    },
+    {
+      name: "Course-3",
+      imagePath: "/projects/puttclub/assets/course3.svg",
+    }
+  ]
+
   return (
     <div xr-layer="true" style={styles.mainMenuContainer}>
       <div xr-layer="true" style={styles.menuSection}>
@@ -132,38 +170,39 @@ export const MainMenu = () => {
         </div>
         <div xr-layer="true" style={styles.menuContainer}>
           <div xr-layer="true" style={styles.leftContainer}>
-            <button xr-layer="true" style={styles.leftButton}>Single Player</button>
-            <button xr-layer="true" style={styles.leftButton}>Multi Player</button>
-            <button xr-layer="true" style={styles.leftButton}>Quick Match</button>
-            <button xr-layer="true" style={styles.leftButton}>Private Game</button>
+            <img xr-layer="true" style={styles.leftContainerImg} src={'/projects/puttclub/assets/left_rectangle.svg'} alt="left" />
+            <div style={styles.leftButtonsContainer}>
+              <button xr-layer="true" style={styles.leftButton}>Single Player</button>
+              <button xr-layer="true" style={styles.leftButton}>Multiplayer</button>
+              <button xr-layer="true" style={styles.leftButton}>Quick Match</button>
+              <button xr-layer="true" style={styles.leftButton}>Private Game</button>
+            </div>
           </div>
           <div xr-layer="true" style={styles.centerMenuContainer}>
-            <div xr-layer="true" style={styles.courseContainer}>
-              <div xr-layer="true" style={styles.courseImage}>
-                <img xr-layer="true" src={"/projects/puttclub/assets/course1.svg"} alt="course1" />
-              </div>
-            </div>
-            <div xr-layer="true" style={styles.courseContainer}>
-              <div xr-layer="true" style={styles.courseImage}>
-                <img xr-layer="true" src={"/projects/puttclub/assets/course2.svg"} alt="course2" />
-              </div>
-            </div>
-            <div xr-layer="true" style={styles.courseContainer}>
-              <div xr-layer="true" style={styles.courseImage}>
-                <img xr-layer="true" src={"/projects/puttclub/assets/course3.svg"} alt="course3" />
-              </div>
-            </div>
+            {courses.map((course, cIndex) => {
+              return (
+                <div key={cIndex} xr-layer="true" style={styles.courseContainer}>
+                  <div xr-layer="true" style={styles.courseImage}>
+                    <img xr-layer="true" src={course.imagePath} alt="course" />
+                    <div xr-layer="true" style={styles.courseText}>{course.name}</div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
           <div xr-layer="true" style={styles.rightContainer}>
-            <button xr-layer="true" style={styles.rightButton}>Play Round</button>
-            <button xr-layer="true" style={styles.rightButton}>Front 9</button>
-            <button xr-layer="true" style={styles.rightButton}>Back 9</button>
-            <button xr-layer="true" style={styles.rightButton}>Practice</button>
+            <img xr-layer="true" style={styles.rightContainerImg} src={'/projects/puttclub/assets/right_rectangle.svg'} alt="right" />
+            <div style={styles.rightButtonsContainer}>
+              <button xr-layer="true" style={styles.rightButton}>Play Round</button>
+              <button xr-layer="true" style={styles.rightButton}>Front 9</button>
+              <button xr-layer="true" style={styles.rightButton}>Back 9</button>
+              <button xr-layer="true" style={styles.rightButton}>Practice</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div xr-layer="true" style={styles.footerContainer}>
-        <button xr-layer="true" style={styles.footerButton}>Invite Friends</button>
+        <div xr-layer="true" style={styles.footerContainer}>
+          <button xr-layer="true" style={styles.footerButton}>Invite Friends</button>
+        </div>
       </div>
     </div>
   )

@@ -100,7 +100,7 @@
         {
           "name": "gltf-model",
           "props": {
-            "src": "__$project$__/puttclub/assets/VRGolfAlpha_V1_4.glb",
+            "src": "__$project$__/puttclub/assets/island_course.glb",
             "textureOverride": "",
             "matrixAutoUpdate": true
           }
@@ -115,7 +115,7 @@
         {
           "name": "interact",
           "props": {
-            "payloadModelUrl": "__$project$__/puttclub/assets/VRGolfAlpha_V1_4.glb"
+            "payloadModelUrl": "__$project$__/puttclub/assets/island_course.glb"
           }
         },
         {

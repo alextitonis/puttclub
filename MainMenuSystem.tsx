@@ -144,7 +144,7 @@ const styles = {
     padding: "12px 35px",
     border: `solid 5px ${OrangeYellow}`,
   }
-}
+} as const
 
 export const MainMenu = () => {
   const courses = [

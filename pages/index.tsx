@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import World from '@xrengine/client/src/components/World/index'
+import {LoadLocationScene} from '@xrengine/client/src/components/World/LoadLocationScene'
+import {LoadEngineWithScene} from '@xrengine/client/src/components/World/LoadEngineWithScene'
 import AvatarInputSwitch from '@xrengine/client-core/src/world/components/Avatar/AvatarInputSwitch'
 import { EngineEvents } from '@xrengine/engine/src/ecs/classes/EngineEvents'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
@@ -29,7 +30,8 @@ export const HomePage = (props): any => {
   return (
     <>
       {showStartButton && <PlayButton onclick={handleClickPlayButton} />}
-      <World locationName="golf" history={props.history} connectToInstanceServer={false} />
+      <LoadLocationScene locationName="golf" />
+      <LoadEngineWithScene connectToInstanceServer={false} />
       <AvatarInputSwitch enabled={inputsEnabled} joinedWorld={joinedWorld} />
     </>
   )

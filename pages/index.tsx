@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import {LoadLocationScene} from '@xrengine/client/src/components/World/LoadLocationScene'
-import {LoadEngineWithScene} from '@xrengine/client/src/components/World/LoadEngineWithScene'
+import { LoadLocationScene } from '@xrengine/client/src/components/World/LoadLocationScene'
+import { LoadEngineWithScene } from '@xrengine/client/src/components/World/LoadEngineWithScene'
 import AvatarInputSwitch from '@xrengine/client-core/src/world/components/Avatar/AvatarInputSwitch'
 import { EngineEvents } from '@xrengine/engine/src/ecs/classes/EngineEvents'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
@@ -18,7 +18,7 @@ export const HomePage = (props): any => {
   })
 
   const handleClickPlayButton = () => {
-    setShowStartButton(false);
+    setShowStartButton(false)
     if (!joinedWorld) return
 
     setInputsEnabled(true)

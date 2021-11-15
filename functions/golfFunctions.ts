@@ -47,8 +47,6 @@ interface ITeeParData {
 }
 
 export const getCoursePar = (currentHole): number => {
-  const {
-    par
-  }: ITeeParData = getComponent(getTee(currentHole), GolfTeeComponent)
+  const { par }: ITeeParData = getComponent(getTee(currentHole), GolfTeeComponent)
   return par
 }

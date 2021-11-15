@@ -18,7 +18,9 @@ import { NameComponent } from '@xrengine/engine/src/scene/components/NameCompone
 import { Object3DComponent } from '@xrengine/engine/src/scene/components/Object3DComponent'
 import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import {
-  Color, ConeGeometry, Group,
+  Color,
+  ConeGeometry,
+  Group,
   Material,
   Mesh,
   MeshBasicMaterial,
@@ -127,7 +129,6 @@ export const resetBall = (entityBall: Entity, position: number[]) => {
 
     collider.body.setLinearVelocity({ x: 0, y: 0, z: 0 }, true)
     collider.body.setAngularVelocity({ x: 0, y: 0, z: 0 }, true)
-    
   } else {
     const transform = getComponent(entityBall, TransformComponent)
     transform.position.fromArray(position)
@@ -321,7 +322,6 @@ function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: 
 }
 
 export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._TYPE) => {
-
   const world = useWorld()
   console.log(GolfState.players.value.length)
   console.log(action.userId)

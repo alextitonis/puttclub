@@ -25,8 +25,12 @@ export const setupPlayerAvatar = async (entityPlayer: Entity) => {
   avatarComponent.modelContainer.children.forEach((child) => child.removeFromParent())
 
   const { scene: headGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_head.glb')
-  const { scene: handGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_hands.glb')
-  const { scene: torsoGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_torso.glb')
+  const { scene: handGLTF } = AssetLoader.getFromCache(
+    Engine.publicPath + '/projects/puttclub/avatars/avatar_hands.glb'
+  )
+  const { scene: torsoGLTF } = AssetLoader.getFromCache(
+    Engine.publicPath + '/projects/puttclub/avatars/avatar_torso.glb'
+  )
 
   const headModel = SkeletonUtils.clone(headGLTF)
   headModel.scale.multiplyScalar(avatarScale)
@@ -82,12 +86,12 @@ export const setupPlayerAvatarVR = async (entityPlayer: Entity) => {
     })
   }
 
-  if(xrInputSourceComponent.controllerGripLeft.userData?.mesh){
-    xrInputSourceComponent.controllerGripLeft.userData.mesh.visible = false;
+  if (xrInputSourceComponent.controllerGripLeft.userData?.mesh) {
+    xrInputSourceComponent.controllerGripLeft.userData.mesh.visible = false
   }
 
-  if(xrInputSourceComponent.controllerGripRight.userData?.mesh){
-    xrInputSourceComponent.controllerGripRight.userData.mesh.visible = false;
+  if (xrInputSourceComponent.controllerGripRight.userData?.mesh) {
+    xrInputSourceComponent.controllerGripRight.userData.mesh.visible = false
   }
 
   xrInputSourceComponent.controllerGripLeft.add(golfAvatarComponent.leftHandModel)

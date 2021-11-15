@@ -119,14 +119,14 @@ function golfReceptor(action) {
         setupPlayerAvatar(entity)
         setupPlayerInput(entity)
         console.log(s.currentPlayerId.value, s.players.value.length)
-        if(typeof s.currentPlayerId.value === 'undefined' || s.players.value.length === 0) {
+        if (typeof s.currentPlayerId.value === 'undefined' || s.players.value.length === 0) {
           s.currentPlayerId.merge(userId)
         }
       })
 
       // Setup player XR avatars
       .when(NetworkWorldAction.setXRMode.matchesFromAny, (a) => {
-        if(!isClient) return
+        if (!isClient) return
         const entity = world.getUserAvatarEntity(a.userId)
         if (a.enabled) setupPlayerAvatarVR(entity)
         else setupPlayerAvatarNotInVR(entity)
@@ -154,9 +154,9 @@ function golfReceptor(action) {
         console.log('MAKING BALL')
 
         let entityBall = getBall(action.userId)
-        if(entityBall){
+        if (entityBall) {
           console.warn('The ball entity already exist for user', action.userId)
-        }else{
+        } else {
           entityBall = initializeGolfBall(action)
         }
 
@@ -371,7 +371,7 @@ export default async function GolfSystem(world: World) {
               if (golfBallComponent.state === BALL_STATES.WAITING) {
                 hitBall(entity, entityBall)
                 setBallState(entityBall, BALL_STATES.MOVING)
-                dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}) )
+                dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
               }
             }
           }
@@ -419,7 +419,7 @@ export default async function GolfSystem(world: World) {
               const dist = position.distanceToSquared(getComponent(activeHoleEntity, TransformComponent).position)
               // ball-hole collision not being detected, not sure why, use dist for now
               const inHole = dist < 0.01 //typeof collisionEvent !== 'undefined'
-              console.log(getComponent(activeHoleEntity, TransformComponent).position, )
+              console.log(getComponent(activeHoleEntity, TransformComponent).position)
               console.log('\n\n\n========= ball stopped', outOfBounds, inHole, dist, collisionEvent, '\n')
 
               dispatchFrom(world.hostId, () =>

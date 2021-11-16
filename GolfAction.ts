@@ -76,5 +76,10 @@ export const GolfAction = {
   showCourseScore: defineActionCreator({
     type: 'puttclub.SHOW_COURSE_SCORE',
     userId: matchesUserId
+  }),
+
+  playerLeave: defineActionCreator({
+    type: 'puttclub.PLAYER_LEAVE',
+    userId: matchesUserId
   })
 }

@@ -385,7 +385,6 @@ export default async function GolfSystem(world: World) {
     
     for (const entity of avatarComponentQuery.exit()) {
       const { userId } = getComponent(entity, NetworkObjectComponent, true)
-      if(accessGolfState().currentPlayerId === userId)
       dispatchFrom(world.hostId, () => GolfAction.playerLeave({ userId }))
     }
 

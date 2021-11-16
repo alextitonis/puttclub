@@ -69,6 +69,10 @@ GolfState.attach(() => ({
   })
 }))
 
+export function accessGolfState() {
+  return GolfState.attach(Downgraded).value
+}
+
 export function useGolfState() {
   return useState(GolfState) as any as typeof GolfState
 }
@@ -160,7 +164,7 @@ function golfReceptor(action) {
           entityBall = initializeGolfBall(action)
         }
 
-        if (GolfState.currentPlayerId.value === action.userId) {
+        if (s.currentPlayerId.value === action.userId) {
           setBallState(entityBall, BALL_STATES.WAITING)
         } else {
           setBallState(entityBall, BALL_STATES.INACTIVE)
@@ -362,7 +366,7 @@ export default async function GolfSystem(world: World) {
       // we only need to detect hits for our own club
       if (isEntityLocalClient(ownerEntity)) {
         if (getCurrentGolfPlayerEntity() === ownerEntity) {
-          const currentPlayerId = GolfState.currentPlayerId.value
+          const currentPlayerId = accessGolfState().currentPlayerId
           const entityBall = getBall(currentPlayerId)
           if (entityBall) {
             const { collisionEntity } = getCollisions(entity, GolfBallComponent)
@@ -393,7 +397,7 @@ export default async function GolfSystem(world: World) {
       }
     }
 
-    const currentPlayerId = GolfState.currentPlayerId.value
+    const currentPlayerId = accessGolfState().currentPlayerId
     const activeBallEntity = getBall(currentPlayerId)
     if (activeBallEntity !== undefined) {
       const golfBallComponent = getComponent(activeBallEntity, GolfBallComponent)
@@ -403,6 +407,7 @@ export default async function GolfSystem(world: World) {
         ballTimer++
         if (ballTimer > 60) {
           const { velocity } = getComponent(activeBallEntity, VelocityComponent)
+          console.log(velocity)
           const position = getComponent(activeBallEntity, TransformComponent)?.position
           if (!position) return
           const velMag = velocity.lengthSq()
@@ -413,7 +418,7 @@ export default async function GolfSystem(world: World) {
               golfBallComponent.groundRaycast.origin.copy(position)
               world.physics.doRaycast(golfBallComponent.groundRaycast)
               const outOfBounds = !golfBallComponent.groundRaycast.hits.length
-              const activeHoleEntity = getHole(GolfState.currentHole.value)
+              const activeHoleEntity = getHole(accessGolfState().currentHole)
               if (!position) return
               const { collisionEvent } = getCollisions(activeBallEntity, GolfHoleComponent)
               const dist = position.distanceToSquared(getComponent(activeHoleEntity, TransformComponent).position)

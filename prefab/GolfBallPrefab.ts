@@ -33,7 +33,7 @@ import { GolfBallComponent } from '../components/GolfBallComponent'
 import { getGolfPlayerNumber, getTee } from '../functions/golfFunctions'
 import { GolfAction } from '../GolfAction'
 import { GolfCollisionGroups, GolfColours } from '../GolfGameConstants'
-import { GolfState } from '../GolfSystem'
+import { accessGolfState, GolfState } from '../GolfSystem'
 
 /**
  * @author Josh Field <github.com/HexaField>
@@ -76,7 +76,7 @@ export const setBallState = (entityBall: Entity, ballState: BALL_STATES) => {
       case BALL_STATES.INACTIVE: {
         // hide ball
         ballGroup.quaternion.identity()
-        if (GolfState.players.value[golfBallComponent.number].stroke === 0) {
+        if (accessGolfState().players[golfBallComponent.number].stroke === 0) {
           ballGroup.visible = false
         }
         ballGroup.userData.trailObject.visible = false
@@ -323,14 +323,17 @@ function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: 
 
 export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._TYPE) => {
   const world = useWorld()
-  console.log(GolfState.players.value.length)
+  console.log(accessGolfState())
+  console.log(JSON.stringify(accessGolfState()))
+  console.log(GolfState)
+  console.log(JSON.stringify(GolfState.value))
   console.log(action.userId)
   const ownerEntity = world.getUserAvatarEntity(action.userId)
   const playerNumber = getGolfPlayerNumber(action.userId)
   const ballEntity = world.getNetworkObject(action.networkId)
-  console.log('initializeGolfBall', JSON.stringify(action))
+  console.log('initializeGolfBall', JSON.stringify(action), ownerEntity, playerNumber, ballEntity)
 
-  const teeEntity = getTee(GolfState.currentHole.value)
+  const teeEntity = getTee(accessGolfState().currentHole)
   const teeTransform = getComponent(teeEntity, TransformComponent)
   const transform = addComponent(ballEntity, TransformComponent, {
     position: new Vector3(teeTransform.position.x, teeTransform.position.y + golfBallRadius, teeTransform.position.z),

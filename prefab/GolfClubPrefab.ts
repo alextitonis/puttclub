@@ -204,7 +204,7 @@ type GolfClubSpawnParameters = {
   playerNumber: number
 }
 
-export const initializeGolfClub = (action: typeof GolfAction.spawnBall.matches._TYPE) => {
+export const initializeGolfClub = (action: typeof GolfAction.spawnClub.matches._TYPE) => {
   const world = useWorld()
   const ownerEntity = world.getUserAvatarEntity(action.userId)
   const entityClub = world.getNetworkObject(action.networkId)

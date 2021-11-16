@@ -4,7 +4,7 @@ import { getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFuncti
 import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import { GolfBotHooks } from './GolfBotHooks'
 import { tweenXRInputSource, updateController } from '@xrengine/engine/src/bot/functions/xrBotHookFunctions'
-import { GolfState } from '../GolfSystem'
+import { accessGolfState } from '../GolfSystem'
 import { isCurrentGolfPlayer, getHole, getBall, getTee } from './golfFunctions'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 
@@ -25,17 +25,17 @@ export function getIsPlayerTurn() {
 
 export function getIsGoal() {
   // if (!useWorld().localClientEntity) return false
-  // return hasComponent(useWorld().localClientEntity, GolfState.Goal)
+  // return hasComponent(useWorld().localClientEntity, accessGolfState().Goal)
 }
 
 export function getIsOutOfCourse() {
   // const ballEntity = getOwnBall() as Entity
-  // return hasComponent(ballEntity, GolfState.CheckCourse)
+  // return hasComponent(ballEntity, accessGolfState().CheckCourse)
 }
 
 export function getIsBallStopped() {
   // const ballEntity = getOwnBall() as Entity
-  // return hasComponent(ballEntity, GolfState.BallStopped)
+  // return hasComponent(ballEntity, accessGolfState().BallStopped)
 }
 
 export function swingClub() {
@@ -60,19 +60,19 @@ export function swingClub() {
 }
 
 export function getTeePosition() {
-  const teeEntity = getTee(GolfState.currentHole.value)
+  const teeEntity = getTee(accessGolfState().currentHole)
   const teeTransform = getComponent(teeEntity, TransformComponent)
   return teeTransform.position
 }
 
 export function getHolePosition() {
-  const holeEntity = getHole(GolfState.currentHole.value)
+  const holeEntity = getHole(accessGolfState().currentHole)
   const holeTransform = getComponent(holeEntity, TransformComponent)
   return holeTransform.position
 }
 
 export function getBallPosition() {
-  const ballEntity = getBall(GolfState.currentPlayerId.value)
+  const ballEntity = getBall(accessGolfState().currentPlayerId)
   const ballTransform = getComponent(ballEntity, TransformComponent)
   return ballTransform.position
 }

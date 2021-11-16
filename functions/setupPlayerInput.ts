@@ -13,7 +13,7 @@ import { GolfClubComponent } from '../components/GolfClubComponent'
 import { hideClub } from '../prefab/GolfClubPrefab'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
 import { VelocityComponent } from '@xrengine/engine/src/physics/components/VelocityComponent'
-import { GolfState } from '../GolfSystem'
+import { accessGolfState } from '../GolfSystem'
 import { getGolfPlayerNumber, isCurrentGolfPlayer, getBall, getClub, getHole } from './golfFunctions'
 import { swingClub } from './golfBotHookFunctions'
 import { simulateXR, updateHead } from '@xrengine/engine/src/bot/functions/xrBotHookFunctions'
@@ -56,7 +56,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
       const position = ballTransform.position
       console.log('teleporting to', position.x, position.y, position.z)
 
-      const holeEntity = getHole(GolfState.currentHole.value)
+      const holeEntity = getHole(accessGolfState().currentHole)
       const holeTransform = getComponent(holeEntity, TransformComponent)
       // its do ball - hole
       let pos1 = new Vector3().copy(ballTransform.position).setY(0)
@@ -115,7 +115,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
         (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
           if (inputValue.lifecycleState !== LifecycleValue.Started) return
           if (!isCurrentGolfPlayer(Engine.userId)) return
-          const currentHole = GolfState.currentHole.value
+          const currentHole = accessGolfState().currentHole
           const holeEntity = getHole(currentHole)
           const ballEntity = getBall(Engine.userId)
           const position = new Vector3().copy(getComponent(holeEntity, TransformComponent).position)

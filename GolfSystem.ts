@@ -41,6 +41,8 @@ import matches from 'ts-matches'
 import { SpawnPoseComponent } from '@xrengine/engine/src/avatar/components/SpawnPoseComponent'
 import { UserId } from '@xrengine/common/src/interfaces/UserId'
 import { NetworkWorldAction } from '@xrengine/engine/src/networking/functions/NetworkWorldAction'
+import { AvatarComponent } from '@xrengine/engine/src/avatar/components/AvatarComponent'
+import { NetworkObjectComponent } from '@xrengine/engine/src/networking/components/NetworkObjectComponent'
 
 export const GolfHolePars = [] as Array<number>
 
@@ -54,6 +56,7 @@ export const GolfState = createState({
     stroke: number
     viewingScorecard: boolean
     viewingCourseScore: boolean
+    isConnected: boolean
   }>,
   currentPlayerId: undefined! as UserId,
   currentHole: 0
@@ -86,7 +89,7 @@ const getTeePosition = (currentHole: number) => {
 function golfReceptor(action) {
   const world = useWorld()
 
-  console.log(action)
+  // console.log(action)
 
   GolfState.batch((s) => {
     matches(action)
@@ -102,19 +105,21 @@ function golfReceptor(action) {
        */
       .when(NetworkWorldAction.spawnAvatar.matches, ({ userId }) => {
         const playerAlreadyExists = s.players.find((p) => p.userId.value === userId)
-        if (!playerAlreadyExists) {
+        if (playerAlreadyExists) {
+          playerAlreadyExists.merge({ isConnected: true })
+          console.log(`player ${userId} rejoined`)
+        } else {
           s.players.merge([
             {
               userId: userId,
               scores: [],
               stroke: 0,
               viewingScorecard: false,
-              viewingCourseScore: false
+              viewingCourseScore: false,
+              isConnected: true
             }
           ])
           console.log(`player ${userId} joined`)
-        } else {
-          console.log(`player ${userId} rejoined`)
         }
         dispatchFrom(world.hostId, () => GolfAction.sendState({ state: s.attach(Downgraded).value })).to(userId)
         dispatchFrom(world.hostId, () => GolfAction.spawnBall({ userId }))
@@ -210,8 +215,8 @@ function golfReceptor(action) {
        */
       .when(GolfAction.nextTurn.matches, ({ userId }) => {
         const currentPlayerId = s.currentPlayerId.value
-        const currentPlayerState = s.players.find((c) => c.userId.value === currentPlayerId)!
-        const currentPlayerIndex = s.players.indexOf(currentPlayerState)
+        const currentPlayerIndex = s.players.findIndex((c) => c.userId.value === currentPlayerId)!
+        const currentPlayerState = s.players[currentPlayerIndex]
         const currentHole = s.currentHole.value
 
         const stroke = currentPlayerState.stroke.value
@@ -220,26 +225,29 @@ function golfReceptor(action) {
         const overParLimit = 3 // todo: expose as external config?
 
         const entityBall = getBall(userId)
-        const { state } = getComponent(entityBall, GolfBallComponent)
-        console.log('state', state)
-        if (
-          // if ball is in hole
-          state === BALL_STATES.IN_HOLE ||
-          // or player is over the par limit
-          stroke >= par + overParLimit
-        ) {
-          // finish their round
-          const total = stroke - par
-          currentPlayerState.scores.set([...currentPlayerState.scores.value, total])
-          dispatchFrom(world.hostId, () => GolfAction.showCourseScore({ userId }))
+        // If the player leaves, the ball will be removed also
+        if(entityBall) {
+          const { state } = getComponent(entityBall, GolfBallComponent)
+          console.log('state', state)
+          if (
+            // if ball is in hole
+            state === BALL_STATES.IN_HOLE ||
+            // or player is over the par limit
+            stroke >= par + overParLimit
+          ) {
+            // finish their round
+            const total = stroke - par
+            currentPlayerState.scores.set([...currentPlayerState.scores.value, total])
+            dispatchFrom(world.hostId, () => GolfAction.showCourseScore({ userId }))
+          }
+
+          setBallState(entityBall, BALL_STATES.INACTIVE)
         }
 
-        setBallState(entityBall, BALL_STATES.INACTIVE)
-
         // get players who haven't finished yet
-        const playerSequence = s.players.value.slice().concat(s.players.value) // wrap
+        const playerSequence = s.players.value.slice(currentPlayerIndex).concat(s.players.value.slice(0, currentPlayerIndex)) // wrap
         const nextPlayer = playerSequence.filter((p) => {
-          return p.scores.length <= currentHole && playerSequence.indexOf(p) > currentPlayerIndex
+          return p.scores.length <= currentHole && playerSequence.indexOf(p) > currentPlayerIndex && p.isConnected
         })[0]
 
         console.log('nextPlayer', nextPlayer)
@@ -333,6 +341,20 @@ function golfReceptor(action) {
         const player = s.players.find((p) => p.userId.value === userId)
         if (player) player.viewingCourseScore.set((v) => (typeof action.value === 'boolean' ? action.value : !v))
       })
+
+      /**
+       * If a player leaves on their turn, 
+       */
+      .when(GolfAction.playerLeave.matches, ({ userId }) => {
+        s.players.find((p) => p.userId.value === userId)!.merge({ isConnected: false })
+        if(userId === s.currentPlayerId.value) {
+          dispatchFrom(world.hostId, () => GolfAction.resetBall({ 
+            userId,
+            position: getTeePosition(s.currentHole.value)
+          }))
+          dispatchFrom(world.hostId, () => GolfAction.nextTurn({ userId }))
+        }
+      })
   })
 }
 
@@ -345,6 +367,7 @@ export default async function GolfSystem(world: World) {
   world.receptors.push(golfReceptor)
 
   const namedComponentQuery = defineQuery([NameComponent])
+  const avatarComponentQuery = defineQuery([AvatarComponent])
   const golfClubQuery = defineQuery([GolfClubComponent])
 
   if (isClient) {
@@ -359,6 +382,13 @@ export default async function GolfSystem(world: World) {
   }
 
   return () => {
+    
+    for (const entity of avatarComponentQuery.exit()) {
+      const { userId } = getComponent(entity, NetworkObjectComponent, true)
+      if(accessGolfState().currentPlayerId === userId)
+      dispatchFrom(world.hostId, () => GolfAction.playerLeave({ userId }))
+    }
+
     for (const entity of golfClubQuery()) {
       const { number } = getComponent(entity, GolfClubComponent)
       const ownerEntity = getPlayerEntityFromNumber(number)

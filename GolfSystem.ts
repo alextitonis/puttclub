@@ -128,7 +128,7 @@ function golfReceptor(action) {
         setupPlayerAvatar(entity)
         setupPlayerInput(entity)
         console.log(s.currentPlayerId.value, s.players.value.length)
-        const currentPlayer = s.players.find(p => p.userId.value === s.currentPlayerId.value)
+        const currentPlayer = s.players.find((p) => p.userId.value === s.currentPlayerId.value)
         if (s.players.value.length === 0 || !currentPlayer || !currentPlayer.isConnected.value) {
           s.currentPlayerId.set(userId)
         }
@@ -227,7 +227,7 @@ function golfReceptor(action) {
 
         const entityBall = getBall(userId)
         // If the player leaves, the ball will be removed also
-        if(entityBall) {
+        if (entityBall) {
           const { state } = getComponent(entityBall, GolfBallComponent)
           console.log('state', state)
           if (
@@ -246,7 +246,9 @@ function golfReceptor(action) {
         }
 
         // get players who haven't finished yet
-        const playerSequence = s.players.value.slice(currentPlayerIndex).concat(s.players.value.slice(0, currentPlayerIndex)) // wrap
+        const playerSequence = s.players.value
+          .slice(currentPlayerIndex)
+          .concat(s.players.value.slice(0, currentPlayerIndex)) // wrap
         console.log('\n\nplayerSequence', playerSequence, currentPlayerIndex, currentHole, '\n\n')
         const nextPlayer = playerSequence.filter((p) => {
           console.log(p)
@@ -346,15 +348,17 @@ function golfReceptor(action) {
       })
 
       /**
-       * If a player leaves on their turn, 
+       * If a player leaves on their turn,
        */
       .when(GolfAction.playerLeave.matches, ({ userId }) => {
         s.players.find((p) => p.userId.value === userId)!.merge({ isConnected: false })
-        if(userId === s.currentPlayerId.value) {
-          dispatchFrom(world.hostId, () => GolfAction.resetBall({ 
-            userId,
-            position: getTeePosition(s.currentHole.value)
-          }))
+        if (userId === s.currentPlayerId.value) {
+          dispatchFrom(world.hostId, () =>
+            GolfAction.resetBall({
+              userId,
+              position: getTeePosition(s.currentHole.value)
+            })
+          )
           dispatchFrom(world.hostId, () => GolfAction.nextTurn({ userId }))
         }
       })
@@ -385,7 +389,6 @@ export default async function GolfSystem(world: World) {
   }
 
   return () => {
-    
     for (const entity of avatarComponentQuery.exit()) {
       const { userId } = getComponent(entity, NetworkObjectComponent, true)
       dispatchFrom(world.hostId, () => GolfAction.playerLeave({ userId }))

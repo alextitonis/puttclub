@@ -36,7 +36,7 @@ export enum GolfInput {
   TOGGLECLUB = 121
 }
 
-const getAngleToHole = (ballPos: Vector3) => {  
+const getAngleToHole = (ballPos: Vector3) => {
   const holeEntity = getHole(accessGolfState().currentHole)
   const holeTransform = getComponent(holeEntity, TransformComponent)
   // its do ball - hole

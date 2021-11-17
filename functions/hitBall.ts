@@ -41,7 +41,7 @@ export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
   vec3.applyAxisAngle(upVector, clubMoveDirection * angleOfIncidence).normalize().multiplyScalar(golfClubComponent.velocity.length());
 */
 
-const world = useWorld()
+  const world = useWorld()
   vector0.copy(golfClubComponent.velocity).multiplyScalar(hitAdvanceFactor).multiplyScalar(world.physics.substeps)
   // vector0.copy(vec3).multiplyScalar(hitAdvanceFactor);
   // lock to XZ plane if we disable chip shots

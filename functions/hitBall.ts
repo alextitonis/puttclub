@@ -5,6 +5,8 @@ import { ColliderComponent } from '@xrengine/engine/src/physics/components/Colli
 import { GolfBallComponent } from '../components/GolfBallComponent'
 import { GolfClubComponent } from '../components/GolfClubComponent'
 import { teleportRigidbody } from '@xrengine/engine/src/physics/functions/teleportRigidbody'
+import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
+import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 
 /**
  * @author Josh Field <github.com/HexaField>
@@ -21,6 +23,7 @@ export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
   console.log('hitBall')
   const golfClubComponent = getComponent(entityClub, GolfClubComponent)
   const collider = getComponent(entityBall, ColliderComponent)
+  const transform = getComponent(entityBall, TransformComponent)
   const golfBallComponent = getComponent(entityBall, GolfBallComponent)
 
   //golfClubComponent.velocity.set(-0.000016128,0,-0.02352940744240586)
@@ -38,7 +41,8 @@ export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
   vec3.applyAxisAngle(upVector, clubMoveDirection * angleOfIncidence).normalize().multiplyScalar(golfClubComponent.velocity.length());
 */
 
-  vector0.copy(golfClubComponent.velocity).multiplyScalar(hitAdvanceFactor)
+const world = useWorld()
+  vector0.copy(golfClubComponent.velocity).multiplyScalar(hitAdvanceFactor).multiplyScalar(world.physics.substeps)
   // vector0.copy(vec3).multiplyScalar(hitAdvanceFactor);
   // lock to XZ plane if we disable chip shots
   if (!golfClubComponent.canDoChipShots) {
@@ -48,14 +52,15 @@ export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
   // block teleport ball if distance to wall less length of what we want to teleport
   golfBallComponent.wallRaycast.origin.copy(collider.body.getGlobalPose().translation as Vector3)
   golfBallComponent.wallRaycast.direction.copy(golfClubComponent.velocity).normalize()
+  world.physics.doRaycast(golfBallComponent.wallRaycast)
   const hit = golfBallComponent.wallRaycast.hits[0]
-
+  console.log(hit)
   if (!hit || hit.distance * hit.distance > vector0.lengthSq()) {
     // teleport ball in front of club a little bit
     teleportRigidbody(collider.body, vector0.add(collider.body.getGlobalPose().translation as Vector3))
   }
 
-  vector0.copy(golfClubComponent.velocity).multiplyScalar(velocityMultiplier)
+  vector0.copy(golfClubComponent.velocity).multiplyScalar(velocityMultiplier).multiplyScalar(world.physics.substeps)
   // vector1.copy(vec3).multiplyScalar(velocityMultiplier);
   if (!golfClubComponent.canDoChipShots) {
     vector0.y = 0

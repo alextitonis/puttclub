@@ -379,6 +379,7 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
       translation: transform.position,
       rotation: new Quaternion()
     },
+    useCCD: true,
     userData: { entity: ballEntity }
   })
   addComponent(ballEntity, ColliderComponent, { body })

@@ -27,12 +27,33 @@ import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 import { dispatchFrom } from '@xrengine/engine/src/networking/functions/dispatchFrom'
 import { teleportRigidbody } from '@xrengine/engine/src/physics/functions/teleportRigidbody'
+import { hitBall } from './hitBall'
 
 // we need to figure out a better way than polluting an 8 bit namespace :/
 
 export enum GolfInput {
   TELEPORT = 120,
   TOGGLECLUB = 121
+}
+
+const getAngleToHole = (ballPos: Vector3) => {  
+  const holeEntity = getHole(accessGolfState().currentHole)
+  const holeTransform = getComponent(holeEntity, TransformComponent)
+  // its do ball - hole
+  let pos1 = new Vector3().copy(ballPos).setY(0)
+  let pos2 = new Vector3().copy(holeTransform.position).setY(0)
+  // its do hole - ball
+  if (ballPos.z < holeTransform.position.z) {
+    pos1 = new Vector3().copy(holeTransform.position).setY(0)
+    pos2 = new Vector3().copy(ballPos).setY(0)
+  }
+  // face character towards hole
+  let angle = new Vector3(-1, 0, 0).angleTo(pos1.sub(pos2).normalize())
+  // with out it direction right but club invert side
+  if (ballPos.z < holeTransform.position.z) {
+    angle += Math.PI
+  }
+  return angle
 }
 
 const rotate90onY = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2)
@@ -56,22 +77,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
       const position = ballTransform.position
       console.log('teleporting to', position.x, position.y, position.z)
 
-      const holeEntity = getHole(accessGolfState().currentHole)
-      const holeTransform = getComponent(holeEntity, TransformComponent)
-      // its do ball - hole
-      let pos1 = new Vector3().copy(ballTransform.position).setY(0)
-      let pos2 = new Vector3().copy(holeTransform.position).setY(0)
-      // its do hole - ball
-      if (position.z < holeTransform.position.z) {
-        pos1 = new Vector3().copy(holeTransform.position).setY(0)
-        pos2 = new Vector3().copy(ballTransform.position).setY(0)
-      }
-      // face character towards hole
-      let angle = new Vector3(-1, 0, 0).angleTo(pos1.sub(pos2).normalize())
-      // with out it direction right but club invert side
-      if (position.z < holeTransform.position.z) {
-        angle += Math.PI
-      }
+      const angle = getAngleToHole(position)
 
       const controller = getComponent(entity, AvatarControllerComponent)
       const actor = getComponent(entity, AvatarComponent)
@@ -175,12 +181,24 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
       swingClubKey,
       (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
         if (inputValue.lifecycleState !== LifecycleValue.Started) return
-        updateHead({
-          position: [0, 2, 1],
-          rotation: eulerToQuaternion(-1.25, 0, 0).toArray()
-        })
-        // rotatePlayer()
-        swingClub()
+        if (!isCurrentGolfPlayer(Engine.userId)) return
+        // TODO: fix xr bot stuff
+        // updateHead({
+        //   position: [0, 2, 1],
+        //   rotation: eulerToQuaternion(-1.25, 0, 0).toArray()
+        // })
+        // // rotatePlayer()
+        // swingClub()
+        const ballEntity = getBall(Engine.userId)
+        const clubEntity = getClub(Engine.userId)
+        const golfClubComponent = getComponent(clubEntity, GolfClubComponent)
+        const ballTransform = getComponent(ballEntity, TransformComponent)
+        const position = ballTransform.position
+        const angle = getAngleToHole(position)
+        golfClubComponent.velocity.copy(new Vector3(0.1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle))
+        hitBall(clubEntity, ballEntity)
+        setBallState(ballEntity, BALL_STATES.MOVING)
+        dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
       }
     )
   }

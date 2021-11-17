@@ -128,8 +128,9 @@ function golfReceptor(action) {
         setupPlayerAvatar(entity)
         setupPlayerInput(entity)
         console.log(s.currentPlayerId.value, s.players.value.length)
-        if (typeof s.currentPlayerId.value === 'undefined' || s.players.value.length === 0) {
-          s.currentPlayerId.merge(userId)
+        const currentPlayer = s.players.find(p => p.userId.value === s.currentPlayerId.value)
+        if (s.players.value.length === 0 || !currentPlayer || !currentPlayer.isConnected.value) {
+          s.currentPlayerId.set(userId)
         }
       })
 
@@ -246,8 +247,10 @@ function golfReceptor(action) {
 
         // get players who haven't finished yet
         const playerSequence = s.players.value.slice(currentPlayerIndex).concat(s.players.value.slice(0, currentPlayerIndex)) // wrap
+        console.log('\n\nplayerSequence', playerSequence, currentPlayerIndex, currentHole, '\n\n')
         const nextPlayer = playerSequence.filter((p) => {
-          return p.scores.length <= currentHole && playerSequence.indexOf(p) > currentPlayerIndex && p.isConnected
+          console.log(p)
+          return p.scores.length <= currentHole && p.isConnected
         })[0]
 
         console.log('nextPlayer', nextPlayer)
@@ -421,6 +424,7 @@ export default async function GolfSystem(world: World) {
         }
         if (name.includes('GolfTee')) {
           const { par } = getComponent(entity, GolfTeeComponent)
+          console.log('par', par)
           GolfHolePars.push(par)
         }
       }
@@ -433,10 +437,12 @@ export default async function GolfSystem(world: World) {
       updateBall(activeBallEntity)
 
       if (!isClient && golfBallComponent.state === BALL_STATES.MOVING) {
+        const { velocity } = getComponent(activeBallEntity, VelocityComponent)
+        console.log('ball velocity', velocity)
         ballTimer++
         if (ballTimer > 60) {
-          const { velocity } = getComponent(activeBallEntity, VelocityComponent)
-          console.log(velocity)
+          // const { velocity } = getComponent(activeBallEntity, VelocityComponent)
+          // console.log(velocity)
           const position = getComponent(activeBallEntity, TransformComponent)?.position
           if (!position) return
           const velMag = velocity.lengthSq()

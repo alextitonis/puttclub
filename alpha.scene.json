@@ -344,8 +344,8 @@
       "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
       "index": 5
     },
-    "A3195102-8BD9-497A-A95F-5F61B46762B7": {
-      "name": "Project",
+    "62E9CC39-B7E5-4BB9-BE77-9FEDBBD6FE92": {
+      "name": "GolfSystem",
       "components": [
         {
           "name": "transform",
@@ -374,24 +374,59 @@
           }
         },
         {
-          "name": "project",
+          "name": "system",
           "props": {
-            "packName": "puttclub",
-            "entryPoints": [
-              {
-                "entryPoint": "GolfSystem.ts",
-                "systemUpdateType": "FIXED"
-              },
-              {
-                "entryPoint": "GolfXRUISystem.ts",
-                "systemUpdateType": "PRE_RENDER"
-              }
-            ]
+            "filePath": "__$project$__/puttclub/GolfSystem.ts",
+            "systemUpdateType": "FIXED",
+            "enableClient": true,
+            "enableServer": true
           }
         }
       ],
       "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
       "index": 6
+    },
+    "AA95A6CE-DFCD-4FBD-A8D5-0716AAA79FC3": {
+      "name": "GolfXRUISystem",
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": {
+            "visible": true
+          }
+        },
+        {
+          "name": "system",
+          "props": {
+            "filePath": "__$project$__/puttclub/GolfXRUISystem.ts",
+            "systemUpdateType": "PRE_RENDER",
+            "enableClient": true,
+            "enableServer": false
+          }
+        }
+      ],
+      "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+      "index": 7
     }
   }
 }

@@ -75,6 +75,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
       if (!ballEntity) return
       const ballTransform = getComponent(ballEntity, TransformComponent)
       const position = ballTransform.position
+      if(position.y < 1) return // dont teleport if ball below world
       console.log('teleporting to', position.x, position.y, position.z)
 
       const angle = getAngleToHole(position)
@@ -144,7 +145,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
           const collider = getComponent(ballEntity, ColliderComponent)
           const velocity = getComponent(ballEntity, VelocityComponent)
           velocity.velocity.set(0, 0, 0)
-          teleportRigidbody(collider.body, new Vector3(2, 1, -4))
+          teleportRigidbody(collider.body, new Vector3(-1, 10, 15))
           collider.body.setLinearVelocity(new Vector3(), true)
 
           const { uniqueId } = getComponent(useWorld().localClientEntity, NetworkObjectComponent)

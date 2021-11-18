@@ -449,7 +449,7 @@ export default async function GolfSystem(world: World) {
           const position = getComponent(activeBallEntity, TransformComponent)?.position
           if (!position) return
           const velMag = velocity.lengthSq()
-          if (velMag < 0.001 || position.y < -100) {
+          if (velMag < 0.001 || position.y < -100 || ballTimer > 60 * 5) {
             setBallState(activeBallEntity, BALL_STATES.STOPPED)
             setTimeout(() => {
               const position = getComponent(activeBallEntity, TransformComponent)?.position

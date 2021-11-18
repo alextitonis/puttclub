@@ -386,7 +386,7 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
   addComponent(ballEntity, CollisionComponent, { collisions: [] })
 
   const filterDataGround = new PhysX.PxQueryFilterData()
-  filterDataGround.setWords(CollisionGroups.Default | CollisionGroups.Ground | CollisionGroups.Trigger, 0)
+  filterDataGround.setWords(GolfCollisionGroups.Course, 0)
   const flags = PhysX.PxQueryFlag.eSTATIC.value | PhysX.PxQueryFlag.eDYNAMIC.value | PhysX.PxQueryFlag.eANY_HIT.value
   filterDataGround.setFlags(flags)
 

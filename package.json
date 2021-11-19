@@ -16,15 +16,6 @@
     "@xrengine/client-core": "^0.4.10",
     "@xrengine/client": "^0.4.10"
   },
-  "xrengine": {
-    "routes": ["/"],
-    "thumbnail": "https://imgur.com/Spyv0Fv.png",
-    "moduleEntryPoints": [
-      "GolfSystem.ts",
-      "GolfXRUISystem.ts"
-    ],
-    "clientReactEntryPoint": []
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/puttclub/puttclub.git"

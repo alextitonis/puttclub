@@ -43,6 +43,7 @@ import { UserId } from '@xrengine/common/src/interfaces/UserId'
 import { NetworkWorldAction } from '@xrengine/engine/src/networking/functions/NetworkWorldAction'
 import { AvatarComponent } from '@xrengine/engine/src/avatar/components/AvatarComponent'
 import { NetworkObjectComponent } from '@xrengine/engine/src/networking/components/NetworkObjectComponent'
+import { ResolvedActionShape } from '@xrengine/engine/src/networking/interfaces/Action'
 
 export const GolfHolePars = [] as Array<number>
 
@@ -61,6 +62,8 @@ export const GolfState = createState({
   currentPlayerId: undefined! as UserId,
   currentHole: 0
 })
+
+export type GolfStateType = typeof GolfState
 
 // Attach logging
 GolfState.attach(() => ({
@@ -85,13 +88,45 @@ const getTeePosition = (currentHole: number) => {
   return getComponent(teeEntity, TransformComponent).position.toArray()
 }
 
+export const receptorSpawnAvatar = (s: GolfStateType, action: ReturnType<typeof NetworkWorldAction.spawnAvatar>) => {
+  const { userId } = action
+  const playerAlreadyExists = s.players.find((p) => p.userId.value === userId)
+  if (playerAlreadyExists) {
+    playerAlreadyExists.merge({ isConnected: true })
+    console.log(`player ${userId} rejoined`)
+  } else {
+    s.players.merge([
+      {
+        userId: userId,
+        scores: [],
+        stroke: 0,
+        viewingScorecard: false,
+        viewingCourseScore: false,
+        isConnected: true
+      }
+    ])
+    console.log(`player ${userId} joined`)
+  }
+  const world = useWorld()
+  dispatchFrom(world.hostId, () => GolfAction.sendState({ state: s.attach(Downgraded).value })).to(userId)
+  dispatchFrom(world.hostId, () => GolfAction.spawnBall({ userId }))
+  dispatchFrom(world.hostId, () => GolfAction.spawnClub({ userId }))
+  const entity = world.getUserAvatarEntity(userId)
+  setupPlayerAvatar(entity)
+  setupPlayerInput(entity)
+  const currentPlayer = s.players.find((p) => p.userId.value === s.currentPlayerId.value)
+  if (s.players.value.length === 0 || !currentPlayer || !currentPlayer.isConnected.value) {
+    s.currentPlayerId.set(userId)
+  }
+}
+
 // IMPORTANT : For FLUX pattern, consider state immutable outside a receptor
-function golfReceptor(action) {
+export function golfReceptor(action) {
   const world = useWorld()
 
   // console.log(action)
 
-  GolfState.batch((s) => {
+  GolfState.batch((s: GolfStateType) => {
     matches(action)
       .when(GolfAction.sendState.matches, ({ state }) => {
         s.set(state)
@@ -103,36 +138,7 @@ function golfReceptor(action) {
        * - spawn golf club
        * - spawn golf ball
        */
-      .when(NetworkWorldAction.spawnAvatar.matches, ({ userId }) => {
-        const playerAlreadyExists = s.players.find((p) => p.userId.value === userId)
-        if (playerAlreadyExists) {
-          playerAlreadyExists.merge({ isConnected: true })
-          console.log(`player ${userId} rejoined`)
-        } else {
-          s.players.merge([
-            {
-              userId: userId,
-              scores: [],
-              stroke: 0,
-              viewingScorecard: false,
-              viewingCourseScore: false,
-              isConnected: true
-            }
-          ])
-          console.log(`player ${userId} joined`)
-        }
-        dispatchFrom(world.hostId, () => GolfAction.sendState({ state: s.attach(Downgraded).value })).to(userId)
-        dispatchFrom(world.hostId, () => GolfAction.spawnBall({ userId }))
-        dispatchFrom(world.hostId, () => GolfAction.spawnClub({ userId }))
-        const entity = world.getUserAvatarEntity(userId)
-        setupPlayerAvatar(entity)
-        setupPlayerInput(entity)
-        console.log(s.currentPlayerId.value, s.players.value.length)
-        const currentPlayer = s.players.find((p) => p.userId.value === s.currentPlayerId.value)
-        if (s.players.value.length === 0 || !currentPlayer || !currentPlayer.isConnected.value) {
-          s.currentPlayerId.set(userId)
-        }
-      })
+      .when(NetworkWorldAction.spawnAvatar.matches, action => receptorSpawnAvatar(s, action))
 
       // Setup player XR avatars
       .when(NetworkWorldAction.setXRMode.matchesFromAny, (a) => {

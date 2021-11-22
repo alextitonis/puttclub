@@ -5,7 +5,8 @@ import { World } from '@xrengine/engine/src/ecs/classes/World'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { createXRUI } from '@xrengine/engine/src/xrui/functions/createXRUI'
 import { XRUIComponent } from '@xrengine/engine/src/xrui/components/XRUIComponent'
-import { getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
+import { defineQuery, getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
+import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 
 const OrangeYellow = '#ffaa22'
 const GreyBorder = '#5a5a5a'
@@ -164,6 +165,42 @@ export const MainMenu = () => {
 
   return (
     <div xr-layer="true" style={styles.mainMenuContainer}>
+      <style type="text/css">{`
+
+        button:hover {
+          background-color: ${GreyBackground} !important
+        }
+
+        .leftButton {
+          width: 100px;
+          fontSize: 30px;
+          cursor: pointer;
+          fontWeight: bold;
+          background: black;
+          color: ${OrangeYellow};
+          padding: 20px 5px;
+          marginBottom: 20px;
+          transform: rotateY(28deg);
+          border: solid 4px ${OrangeYellow};
+          border-radius: 20px;
+        }
+
+        .rightButton {
+          width: 100px;
+          fontSize: 30px;
+          cursor: pointer;
+          fontWeight: bold;
+          background: black;
+          color: ${OrangeYellow};
+          padding: 20px 5px;
+          marginBottom: 20px;
+          transform: 'rotateY(-28deg)';
+          border: solid 4px ${OrangeYellow};
+          border-radius: 20px;
+        }
+        
+
+      `}</style>
       <div xr-layer="true" style={styles.menuSection}>
         <div xr-layer="true" style={styles.logoContainer}>
           <img
@@ -175,23 +212,17 @@ export const MainMenu = () => {
         </div>
         <div xr-layer="true" style={styles.menuContainer}>
           <div xr-layer="true" style={styles.leftContainer}>
-            <img
-              xr-layer="true"
-              style={styles.leftContainerImg}
-              src={'/projects/puttclub/assets/left_rectangle.svg'}
-              alt="left"
-            />
             <div style={styles.leftButtonsContainer}>
-              <button xr-layer="true" style={styles.leftButton}>
+              <button xr-layer="true" className='leftButton'>
                 Single Player
               </button>
-              <button xr-layer="true" style={styles.leftButton}>
+              <button xr-layer="true" className='leftButton'>
                 Multiplayer
               </button>
-              <button xr-layer="true" style={styles.leftButton}>
+              <button xr-layer="true" className='leftButton'>
                 Quick Match
               </button>
-              <button xr-layer="true" style={styles.leftButton}>
+              <button xr-layer="true" className='leftButton'>
                 Private Game
               </button>
             </div>
@@ -211,23 +242,17 @@ export const MainMenu = () => {
             })}
           </div>
           <div xr-layer="true" style={styles.rightContainer}>
-            <img
-              xr-layer="true"
-              style={styles.rightContainerImg}
-              src={'/projects/puttclub/assets/right_rectangle.svg'}
-              alt="right"
-            />
             <div style={styles.rightButtonsContainer}>
-              <button xr-layer="true" style={styles.rightButton}>
+              <button xr-layer="true" className="rightButton">
                 Play Round
               </button>
-              <button xr-layer="true" style={styles.rightButton}>
+              <button xr-layer="true" className="rightButton">
                 Front 9
               </button>
-              <button xr-layer="true" style={styles.rightButton}>
+              <button xr-layer="true" className="rightButton">
                 Back 9
               </button>
-              <button xr-layer="true" style={styles.rightButton}>
+              <button xr-layer="true" className="rightButton">
                 Practice
               </button>
             </div>
@@ -250,12 +275,15 @@ export const MainMenuSystem = async (world: World) => {
     const uiComponent = getComponent(ui.entity, XRUIComponent)
     if (!uiComponent) return
 
+    const mainMenuEntity = world.namedEntities.get('MainMenu')
+    if (!mainMenuEntity) return
+
+    const mainMenuTransform = getComponent(mainMenuEntity, TransformComponent)
+    
     const layer = uiComponent.layer
 
-    layer.position.set(-0.85, 0.5, -1)
-    layer.quaternion.set(0, 0, 0, 1)
-    layer.scale.setScalar(1)
-    layer.matrix.compose(layer.position, layer.quaternion, layer.scale).premultiply(Engine.camera.matrixWorld)
-    layer.matrix.decompose(layer.position, layer.quaternion, layer.scale)
+    layer.position.copy(mainMenuTransform.position)
+    layer.quaternion.copy(mainMenuTransform.rotation)
+    layer.scale.setScalar(3)
   }
 }

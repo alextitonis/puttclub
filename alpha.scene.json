@@ -114,9 +114,7 @@
         },
         {
           "name": "interact",
-          "props": {
-            "payloadModelUrl": "__$project$__/puttclub/assets/island_course.glb"
-          }
+          "props": {}
         },
         {
           "name": "collidable",
@@ -427,6 +425,45 @@
       ],
       "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
       "index": 7
+    },
+    "CDD7F573-21DC-479D-80F8-810F39F49842": {
+      "name": "MainMenu",
+      "components": [
+        {
+          "name": "transform",
+          "props": {
+            "position": {
+              "x": -0.5,
+              "y": 10.5,
+              "z": 17.5
+            },
+            "rotation": {
+              "x": 3.1415926535897927,
+              "y": 0.3490658503988753,
+              "z": -3.141592653589793
+            },
+            "scale": {
+              "x": 0.9999999999999925,
+              "y": 0.9999999999999971,
+              "z": 0.9999999999999925
+            }
+          }
+        },
+        {
+          "name": "visible",
+          "props": {
+            "visible": true
+          }
+        },
+        {
+          "name": "box-collider",
+          "props": {
+            "isTrigger": true
+          }
+        }
+      ],
+      "parent": "2266BED7-6CC4-48A6-95DD-9BCD3CF9EAFC",
+      "index": 8
     }
   }
 }

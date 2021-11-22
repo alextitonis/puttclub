@@ -14,7 +14,7 @@ export default async function GolfXRUISystem(world: World) {
   const playerUISystem = await GolfPlayerUISystem(world)
   const scoreboardUISystem = await GolfScorecardUISystem(world)
   const courseScoreUISystem = await GolfCourseScoreUISystem(world)
-  // const mainMenuSystem = await MainMenuSystem(world)
+  const mainMenuSystem = await MainMenuSystem(world)
 
-  return pipe(/*mainMenuSystem,*/ playerUISystem, scoreboardUISystem, courseScoreUISystem)
+  return pipe(mainMenuSystem, playerUISystem, scoreboardUISystem, courseScoreUISystem)
 }

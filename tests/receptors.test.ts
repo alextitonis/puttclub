@@ -40,6 +40,7 @@ describe('Golf Receptors', () => {
 
     // test
     assert.deepEqual(mockGolfState.players.length, 1)
-    assert.deepEqual(mockGolfState.players[0].userId, mockUserId)
+    console.log(mockGolfState)
+    assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId)
   })
 })

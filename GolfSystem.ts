@@ -357,7 +357,7 @@ export function golfReceptor(action) {
        * If a player leaves on their turn,
        */
       .when(GolfAction.playerLeave.matches, ({ userId }) => {
-        s.players.find((p) => p.userId.value === userId)!.merge({ isConnected: false })
+        s.players.find((p) => p.userId.value === userId)?.merge({ isConnected: false })
         if (userId === s.currentPlayerId.value) {
           dispatchFrom(world.hostId, () =>
             GolfAction.resetBall({

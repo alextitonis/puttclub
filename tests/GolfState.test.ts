@@ -6,8 +6,11 @@ import assert from 'assert'
 import { MathUtils } from 'three'
 import { createWorld, World } from '@xrengine/engine/src/ecs/classes/World'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
-import { receptorBallStopped, receptorPlayerLeave, receptorSpawnAvatar } from '../GolfStateReceptors'
+import { createGolfReceptor, receptorBallStopped, receptorNextHole, receptorPlayerLeave, receptorSpawnAvatar } from '../GolfStateReceptors'
 import { GolfAction } from '../GolfAction'
+import { mockProgressWorldForNetworkActions } from '@xrengine/engine/tests/networking/NetworkTestHelpers'
+import { Network } from '@xrengine/engine/src/networking/classes/Network'
+import { TestNetwork } from "@xrengine/engine/tests/networking/TestNetwork"
 
 const mockState = () => createState({
   players: [] as Array<{
@@ -22,10 +25,11 @@ const mockState = () => createState({
   currentHole: 0
 })
 
-const mockTick = 1/60
-
-const executeWorld = () => {
-  Engine.currentWorld!.execute(mockTick, Engine.currentWorld!.elapsedTime + mockTick)
+const mockGolfReceptorWithState = (state, receptor) => {
+  return (action) => {
+    console.log(state, receptor, action)
+    state.batch(s => receptor(s, action))
+  }
 }
 
 describe('Golf State', () => {
@@ -52,6 +56,7 @@ describe('Golf State', () => {
       }))
       assert.deepEqual(mockGolfState.players.length, 1)
       assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId)
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId)
     })
 
     it('should not remove player from state on disconnect', () => {
@@ -60,6 +65,7 @@ describe('Golf State', () => {
       }))
       assert.deepEqual(mockGolfState.players.length, 1)
       assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId)
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId)
     })
 
     it('should not add player again on reconnect', () => {
@@ -69,31 +75,64 @@ describe('Golf State', () => {
       }))
       assert.deepEqual(mockGolfState.players.length, 1)
       assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId)
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId)
     })
   })
 
-  it('next turn progression', () => {
+  describe('next turn progression', () => {
     const world = createWorld()
     Engine.currentWorld = world
+    Engine.currentWorld.fixedTick = 0
+    Engine.currentWorld.hostId = 'server' as any
+    Network.instance = new TestNetwork()
 
     const mockGolfState = mockState()
     const mockUserId1 = MathUtils.generateUUID()
+    const mockUserId2 = MathUtils.generateUUID()
 
-    receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
-      userId: mockUserId1 as UserId,
-      parameters: {} as any,
-    }))
+    it('single player', () => {
+      receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
+        userId: mockUserId1 as UserId,
+        parameters: {} as any,
+      }))
 
-    assert.deepEqual(mockGolfState.players.length, 1)
-    assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId1)
+      assert.deepEqual(mockGolfState.players.length, 1)
+      assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId1)
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId1)
 
-    receptorBallStopped(mockGolfState, GolfAction.ballStopped({
-      userId: mockUserId1 as UserId,
-      position: [0, 0, 0],
-      inHole: false,
-      outOfBounds: false
-    }))
+      receptorBallStopped(mockGolfState, GolfAction.ballStopped({
+        userId: mockUserId1 as UserId,
+        position: [0, 0, 0],
+        inHole: false,
+        outOfBounds: false
+      }))
 
-    executeWorld()
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId1)
+    })
+
+    it('second player', () => {
+      receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
+        userId: mockUserId2 as UserId,
+        parameters: {} as any,
+      }))
+
+      assert.deepEqual(mockGolfState.players.length, 2)
+      assert.deepEqual(mockGolfState.players[0].userId.value, mockUserId1)
+      assert.deepEqual(mockGolfState.players[1].userId.value, mockUserId2)
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId1)
+
+      receptorBallStopped(mockGolfState, GolfAction.ballStopped({
+        userId: mockUserId1 as UserId,
+        position: [0, 0, 0],
+        inHole: false,
+        outOfBounds: false
+      }))
+
+      Engine.currentWorld!.receptors = [mockGolfReceptorWithState(mockGolfState, receptorNextHole)]!
+
+      mockProgressWorldForNetworkActions()
+      console.log(mockGolfState.value)
+      assert.equal(mockGolfState.currentPlayerId.value, mockUserId2)
+    })
   })
 })

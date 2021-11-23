@@ -28,8 +28,7 @@
     "outDir": "./lib"
   },
   "exclude": [
-    "**/node_modules/**",
-    "./tests/**/*.ts"
+    "**/node_modules/**"
   ],
   "include": [
     "./**/*.ts",

@@ -12,7 +12,7 @@ import { GolfColours } from './GolfGameConstants'
 import { GolfState } from './GolfSystem'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { UserId } from '@xrengine/common/src/interfaces/UserId'
-import { GolfHolePars } from './GolfSystem'
+import { LocalGolfState } from './GolfSystem'
 
 export function createScorecardUI() {
   return createXRUI(GolfScorecardView, GolfState)
@@ -144,7 +144,7 @@ const GolfHoleColumn = (props: { hole: number }) => {
           lineHeight: '30px'
         }}
       >
-        {GolfHolePars[props.hole]}
+        {LocalGolfState.golfHolePars[props.hole]}
       </div>
       {players.map((p, i) => (
         <GolfScoreBox key={i} scoreState={p.scores[props.hole]}></GolfScoreBox>
@@ -184,7 +184,7 @@ const GolfScorecardView = () => {
         }}
       >
         <GolfLabelColumn />
-        {GolfHolePars.map((h, i) => (
+        {LocalGolfState.golfHolePars.map((h, i) => (
           <GolfHoleColumn key={i} hole={i}></GolfHoleColumn>
         ))}
         <GolfFinalScoreColumn></GolfFinalScoreColumn>

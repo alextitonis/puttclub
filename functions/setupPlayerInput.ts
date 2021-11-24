@@ -59,6 +59,7 @@ const getAngleToHole = (ballPos: Vector3) => {
 const rotate90onY = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2)
 
 export const setupPlayerInput = (entityPlayer: Entity) => {
+  if (!isClient) return
   const inputs = getComponent(entityPlayer, InputComponent)
   if (!inputs) return
 

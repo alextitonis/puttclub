@@ -26,23 +26,33 @@ const GolfLabelColumn = () => {
   const userState = useUserState()
   const players = useState(GolfState.players)
   return (
-    <div
-      id="labels"
-      xr-layer="true"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-        padding: '15px 10px',
-        gap: '10px',
-        position: 'static',
-        width: 'fit-content',
-        height: 'fit-content',
-        textAlign: 'right',
-        color: '#FFFFFF'
-      }}
-    >
+    <>
+    <style>{`
+      #labels {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        padding: 15px 10px;
+        gap: 10px;
+        position: static;
+        width: fit-content;
+        height: fit-content;
+        text-align: right;
+        color: #FFFFFF;
+      }
+
+      .playerLabel {
+        position: static;
+        height: 40px;
+        font-size: 30px;
+        line-height: 38px;
+        align-items: center;
+        white-space: nowrap;
+        width: fit-content;
+      }
+    `}</style>
+    <div id="labels" xr-layer="true">
       <div
         style={{
           position: 'static',
@@ -69,12 +79,8 @@ const GolfLabelColumn = () => {
         return (
           <div
             key={i}
+            className="playerLabel"
             style={{
-              position: 'static',
-              height: '40px',
-              fontSize: '30px',
-              lineHeight: '38px',
-              alignItems: 'center',
               color: color.getStyle()
             }}
           >
@@ -83,24 +89,14 @@ const GolfLabelColumn = () => {
         )
       })}
     </div>
+    </>
   )
 }
 
 const GolfScoreBox = (props: { scoreState: State<number | undefined> }) => {
   const score = useState(props.scoreState).value
   return (
-    <div
-      style={{
-        width: '40px',
-        height: '40px',
-        background: 'rgba(0,0,0,0.3)',
-        borderRadius: '9px',
-        fontFamily: 'Roboto',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-        fontSize: '32px'
-      }}
-    >
+    <div className="scorebox">
       {score ?? '-'}
     </div>
   )
@@ -108,43 +104,14 @@ const GolfScoreBox = (props: { scoreState: State<number | undefined> }) => {
 
 const GolfHoleColumn = (props: { hole: number }) => {
   const players = useState(GolfState.players)
+  const par = useState(LocalGolfState.golfHolePars[props.hole])
   return (
-    <div
-      className="hole"
-      xr-layer="true"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        textAlign: 'center',
-        padding: '10px',
-        gap: '10px',
-        color: 'white',
-        paddingLeft: '10px'
-      }}
-    >
-      <div
-        style={{
-          width: '40px',
-          height: '40px',
-          border: '4px solid #FFFFFF',
-          boxSizing: 'border-box',
-          borderRadius: '20px',
-          lineHeight: '32px',
-          fontSize: '20px'
-        }}
-      >
+    <div className="hole-column" xr-layer="true">
+      <div className="hole">
         {props.hole}
       </div>
-      <div
-        style={{
-          width: '40px',
-          height: '40px',
-          fontSize: '18px',
-          lineHeight: '30px'
-        }}
-      >
-        {LocalGolfState.golfHolePars[props.hole]}
+      <div className="par">
+        {par.value}
       </div>
       {players.map((p, i) => (
         <GolfScoreBox key={i} scoreState={p.scores[props.hole]}></GolfScoreBox>
@@ -158,33 +125,74 @@ const GolfFinalScoreColumn = () => {
 }
 
 const GolfScorecardView = () => {
+  const pars = useState(LocalGolfState.golfHolePars)
   return (
     <>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></link>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Racing+Sans+One"></link>
-      <div
-        id="scorecard"
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          padding: '30px 40px',
-          position: 'relative',
-          width: 'fit-content',
-          height: 'fit-content',
-          backgroundColor: '#000000dd',
-          border: '8px solid #FFFFFF',
-          boxSizing: 'border-box',
-          boxShadow: '#fff2 0 0 30px',
-          borderRadius: '60px',
-          margin: '80px',
-          fontFamily: 'Racing Sans One',
-          fontStyle: 'normal',
-          fontWeight: 'normal'
-        }}
-      >
+      <style>{`
+        #scorecard {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          padding: 30px 40px;
+          position: relative;
+          width: fit-content;
+          height: fit-content;
+          background-color: #000000dd;
+          border: 8px solid #FFFFFF;
+          box-sizing: border-box;
+          box-shadow: #fff2 0 0 30px;
+          border-radius: 60px;
+          margin: 80px;
+          font-family: Racing Sans One;
+          font-style: normal;
+          font-weight: normal;
+        }
+
+        .hole-column {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          text-align: center;
+          padding: 10px 0;
+          gap: 10px;
+          color: white;
+          padding-left: 10px;
+        }
+
+        .hole {
+          width: 40px;
+          height: 40px;
+          border: 4px solid #FFFFFF;
+          box-sizing: border-box;
+          border-radius: 20px;
+          line-height: 32px;
+          font-size: 20px;
+        }
+
+        .par {
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+          line-height: 30px;
+        }
+
+        .scorebox {
+          width: 40px;
+          height: 40px;
+          background: rgba(0,0,0,0.3);
+          border-radius: 9px;
+          font-family: Roboto;
+          font-style: normal;
+          font-weight: normal;
+          font-size: 32px;
+        }
+        
+      `}</style>
+      <div id="scorecard">
         <GolfLabelColumn />
-        {LocalGolfState.golfHolePars.map((h, i) => (
+        {pars.map((h, i) => (
           <GolfHoleColumn key={i} hole={i}></GolfHoleColumn>
         ))}
         <GolfFinalScoreColumn></GolfFinalScoreColumn>
@@ -203,7 +211,7 @@ export const GolfScorecardUISystem = async (world: World) => {
     const layer = uiComponent.layer
     layer.position.set(0, 0, -0.5)
     layer.quaternion.set(0, 0, 0, 1)
-    layer.scale.setScalar(1)
+    layer.scale.setScalar(0.6)
     layer.matrix.compose(layer.position, layer.quaternion, layer.scale).premultiply(Engine.camera.matrixWorld)
     layer.matrix.decompose(layer.position, layer.quaternion, layer.scale)
 

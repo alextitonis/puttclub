@@ -36,7 +36,7 @@ const styles = {
     justifyContent: 'center'
   },
   logoContainerImg: {
-    width: '35%',
+    width: '400px',
     height: 'auto'
   },
   menuContainer: {
@@ -164,14 +164,14 @@ export const MainMenu = () => {
   ]
 
   return (
-    <div xr-layer="true" style={styles.mainMenuContainer}>
+    <div xr-layer="" style={styles.mainMenuContainer}>
       <style type="text/css">{`
 
         button:hover {
           background-color: ${GreyBackground} !important
         }
 
-        .leftButton {
+        .side-button {
           width: 100px;
           fontSize: 30px;
           cursor: pointer;
@@ -180,60 +180,52 @@ export const MainMenu = () => {
           color: ${OrangeYellow};
           padding: 20px 5px;
           marginBottom: 20px;
-          transform: rotateY(28deg);
           border: solid 4px ${OrangeYellow};
           border-radius: 20px;
         }
 
-        .rightButton {
-          width: 100px;
-          fontSize: 30px;
-          cursor: pointer;
-          fontWeight: bold;
-          background: black;
-          color: ${OrangeYellow};
-          padding: 20px 5px;
-          marginBottom: 20px;
-          transform: 'rotateY(-28deg)';
-          border: solid 4px ${OrangeYellow};
-          border-radius: 20px;
+        .left {
+          transform: rotateY(28deg);
         }
-        
+
+        .right {
+          transform: rotateY(-28deg);
+        }
 
       `}</style>
-      <div xr-layer="true" style={styles.menuSection}>
-        <div xr-layer="true" style={styles.logoContainer}>
+      <div style={styles.menuSection}>
+        <div style={styles.logoContainer}>
           <img
-            xr-layer="true"
+            xr-layer=""
             style={styles.logoContainerImg}
             src={'/projects/puttclub/assets/puttclub_logo.png'}
             alt="logo"
           />
         </div>
-        <div xr-layer="true" style={styles.menuContainer}>
-          <div xr-layer="true" style={styles.leftContainer}>
+        <div style={styles.menuContainer}>
+          <div style={styles.leftContainer}>
             <div style={styles.leftButtonsContainer}>
-              <button xr-layer="true" className='leftButton'>
+              <button xr-layer="" className='left side-button'>
                 Single Player
               </button>
-              <button xr-layer="true" className='leftButton'>
+              <button xr-layer="" className='left side-button'>
                 Multiplayer
               </button>
-              <button xr-layer="true" className='leftButton'>
+              <button xr-layer="" className='left side-button'>
                 Quick Match
               </button>
-              <button xr-layer="true" className='leftButton'>
+              <button xr-layer="" className='left side-button'>
                 Private Game
               </button>
             </div>
           </div>
-          <div xr-layer="true" style={styles.centerMenuContainer}>
+          <div style={styles.centerMenuContainer}>
             {courses.map((course, cIndex) => {
               return (
-                <div key={cIndex} xr-layer="true" style={styles.courseContainer}>
-                  <div xr-layer="true" style={styles.courseImage}>
-                    <img xr-layer="true" src={course.imagePath} alt="course" />
-                    <div xr-layer="true" style={styles.courseText}>
+                <div key={cIndex} xr-layer="" style={styles.courseContainer}>
+                  <div xr-layer="" style={styles.courseImage}>
+                    <img xr-layer="" src={course.imagePath} alt="course" />
+                    <div xr-layer="" className="courseName" style={styles.courseText}>
                       {course.name}
                     </div>
                   </div>
@@ -241,25 +233,25 @@ export const MainMenu = () => {
               )
             })}
           </div>
-          <div xr-layer="true" style={styles.rightContainer}>
+          <div style={styles.rightContainer}>
             <div style={styles.rightButtonsContainer}>
-              <button xr-layer="true" className="rightButton">
+              <button xr-layer="" className="right side-button">
                 Play Round
               </button>
-              <button xr-layer="true" className="rightButton">
+              <button xr-layer="" className="right side-button">
                 Front 9
               </button>
-              <button xr-layer="true" className="rightButton">
+              <button xr-layer="" className="right side-button">
                 Back 9
               </button>
-              <button xr-layer="true" className="rightButton">
+              <button xr-layer="" className="right side-button">
                 Practice
               </button>
             </div>
           </div>
         </div>
-        <div xr-layer="true" style={styles.footerContainer}>
-          <button xr-layer="true" style={styles.footerButton}>
+        <div style={styles.footerContainer}>
+          <button xr-layer="" style={styles.footerButton}>
             Invite Friends
           </button>
         </div>

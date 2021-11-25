@@ -38,10 +38,10 @@ import { AvatarComponent } from '@xrengine/engine/src/avatar/components/AvatarCo
 import { NetworkObjectComponent } from '@xrengine/engine/src/networking/components/NetworkObjectComponent'
 import { createGolfReceptor } from './GolfStateReceptors'
 
-export const LocalGolfState = {
+export const LocalGolfState = createState({
   ballTimer: 0,
   golfHolePars: [] as Array<number>
-}
+})
 
 /**
  *
@@ -87,6 +87,7 @@ export const getTeePosition = (currentHole: number) => {
 // Note: player numbers are 0-indexed
 
 globalThis.GolfState = GolfState
+globalThis.LocalGolfState = LocalGolfState
 
 export default async function GolfSystem(world: World) {
   world.receptors.push(createGolfReceptor(GolfState))
@@ -146,7 +147,7 @@ export default async function GolfSystem(world: World) {
         if (name.includes('GolfTee')) {
           const { par } = getComponent(entity, GolfTeeComponent)
           console.log('par', par)
-          LocalGolfState.golfHolePars.push(par)
+          LocalGolfState.golfHolePars.merge([par])
         }
       }
     }
@@ -160,14 +161,14 @@ export default async function GolfSystem(world: World) {
       if (!isClient && golfBallComponent.state === BALL_STATES.MOVING) {
         const { velocity } = getComponent(activeBallEntity, VelocityComponent)
         console.log('ball velocity', velocity)
-        LocalGolfState.ballTimer++
-        if (LocalGolfState.ballTimer > 60) {
+        LocalGolfState.ballTimer.set(LocalGolfState.ballTimer.value+1)
+        if (LocalGolfState.ballTimer.value > 60) {
           // const { velocity } = getComponent(activeBallEntity, VelocityComponent)
           // console.log(velocity)
           const position = getComponent(activeBallEntity, TransformComponent)?.position
           if (!position) return
           const velMag = velocity.lengthSq()
-          if (velMag < 0.001 || position.y < -100 || LocalGolfState.ballTimer > 60 * 5) {
+          if (velMag < 0.001 || position.y < -100 || LocalGolfState.ballTimer.value > 60 * 5) {
             setBallState(activeBallEntity, BALL_STATES.STOPPED)
             setTimeout(() => {
               const position = getComponent(activeBallEntity, TransformComponent)?.position

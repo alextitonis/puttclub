@@ -4,7 +4,7 @@
   "description": "",
   "main": "",
   "scripts": {
-    "test": "mocha --config .mocharc.js",
+    "test:packages": "mocha --config .mocharc.js",
     "check": "tsc --noEmit",
     "lint": "prettier --check \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"**/*.{ts,tsx}\"",

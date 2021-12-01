@@ -82,8 +82,8 @@ describe('Golf State', () => {
   describe('next turn progression', () => {
     const world = createWorld()
     useEngine().currentWorld = world
-    useEngine().currentWorld.fixedTick = 0
-    useEngine().currentWorld.hostId = 'server' as any
+    world.fixedTick = 0
+    world.hostId = 'server' as any
     Network.instance = new TestNetwork()
 
     const mockGolfState = mockState()

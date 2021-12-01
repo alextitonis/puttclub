@@ -23,7 +23,7 @@ import { AvatarControllerComponent } from '@xrengine/engine/src/avatar/component
 import { BALL_STATES, setBallState } from '../prefab/GolfBallPrefab'
 import { GolfAction } from '../GolfAction'
 import { NetworkObjectComponent } from '@xrengine/engine/src/networking/components/NetworkObjectComponent'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 import { dispatchFrom } from '@xrengine/engine/src/networking/functions/dispatchFrom'
 import { teleportRigidbody } from '@xrengine/engine/src/physics/functions/teleportRigidbody'
@@ -71,8 +71,8 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
     GolfInput.TELEPORT,
     (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
       if (inputValue.lifecycleState !== LifecycleValue.Ended) return
-      const playerNumber = getGolfPlayerNumber(Engine.userId)
-      const ballEntity = getBall(Engine.userId)
+      const playerNumber = getGolfPlayerNumber(useEngine().userId)
+      const ballEntity = getBall(useEngine().userId)
       if (!ballEntity) return
       const ballTransform = getComponent(ballEntity, TransformComponent)
       const position = ballTransform.position
@@ -102,7 +102,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
       if (inputValue.lifecycleState !== LifecycleValue.Started) return
       console.log(inputValue.lifecycleState)
 
-      const clubEntity = getClub(Engine.userId)
+      const clubEntity = getClub(useEngine().userId)
       const golfClubComponent = getComponent(clubEntity, GolfClubComponent)
       golfClubComponent.hidden = !golfClubComponent.hidden
 
@@ -122,16 +122,16 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
         teleportballkey,
         (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
           if (inputValue.lifecycleState !== LifecycleValue.Started) return
-          if (!isCurrentGolfPlayer(Engine.userId)) return
+          if (!isCurrentGolfPlayer(useEngine().userId)) return
           const currentHole = accessGolfState().currentHole
           const holeEntity = getHole(currentHole)
-          const ballEntity = getBall(Engine.userId)
+          const ballEntity = getBall(useEngine().userId)
           const position = new Vector3().copy(getComponent(holeEntity, TransformComponent).position)
           position.y += 0.1
           teleportRigidbody(getComponent(ballEntity, ColliderComponent).body, position)
 
           setBallState(ballEntity, BALL_STATES.MOVING)
-          dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
+          dispatchFrom(useEngine().userId, () => GolfAction.playerStroke({}))
         }
       )
 
@@ -141,8 +141,8 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
         teleportballOut,
         (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
           if (inputValue.lifecycleState !== LifecycleValue.Started) return
-          if (!isCurrentGolfPlayer(Engine.userId)) return
-          const ballEntity = getBall(Engine.userId)
+          if (!isCurrentGolfPlayer(useEngine().userId)) return
+          const ballEntity = getBall(useEngine().userId)
           const collider = getComponent(ballEntity, ColliderComponent)
           const velocity = getComponent(ballEntity, VelocityComponent)
           velocity.velocity.set(0, 0, 0)
@@ -151,7 +151,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
 
           const { uniqueId } = getComponent(useWorld().localClientEntity, NetworkObjectComponent)
           setBallState(ballEntity, BALL_STATES.MOVING)
-          dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
+          dispatchFrom(useEngine().userId, () => GolfAction.playerStroke({}))
         }
       )
 
@@ -183,7 +183,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
       swingClubKey,
       (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
         if (inputValue.lifecycleState !== LifecycleValue.Started) return
-        if (!isCurrentGolfPlayer(Engine.userId)) return
+        if (!isCurrentGolfPlayer(useEngine().userId)) return
         // TODO: fix xr bot stuff
         // updateHead({
         //   position: [0, 2, 1],
@@ -191,8 +191,8 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
         // })
         // // rotatePlayer()
         // swingClub()
-        const ballEntity = getBall(Engine.userId)
-        const clubEntity = getClub(Engine.userId)
+        const ballEntity = getBall(useEngine().userId)
+        const clubEntity = getClub(useEngine().userId)
         const golfClubComponent = getComponent(clubEntity, GolfClubComponent)
         const ballTransform = getComponent(ballEntity, TransformComponent)
         const position = ballTransform.position
@@ -200,7 +200,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
         golfClubComponent.velocity.copy(new Vector3(0.1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle))
         hitBall(clubEntity, ballEntity)
         setBallState(ballEntity, BALL_STATES.MOVING)
-        dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
+        dispatchFrom(useEngine().userId, () => GolfAction.playerStroke({}))
       }
     )
   }
@@ -213,7 +213,7 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
     (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
       if (inputValue.lifecycleState !== LifecycleValue.Started) return
       console.log('SHOW SCORECARD')
-      dispatchFrom(Engine.userId, () => GolfAction.lookAtScorecard({ userId: Engine.userId, value: 'toggle' }))
+      dispatchFrom(useEngine().userId, () => GolfAction.lookAtScorecard({ userId: useEngine().userId, value: 'toggle' }))
     }
   )
 }

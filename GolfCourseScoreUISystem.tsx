@@ -7,7 +7,7 @@ import React from 'react'
 import { MathUtils } from 'three'
 import { getGolfPlayerNumber, getGolfPlayerState } from './functions/golfFunctions'
 import { GolfState, useGolfState } from './GolfSystem'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { useXRUIState } from '@xrengine/engine/src/xrui/functions/useXRUIState'
 
 const strokeToParScore = {
@@ -68,7 +68,7 @@ export const GolfCourseScoreUISystem = async (world: World) => {
     layer.position.set(0, 0, -0.5)
     layer.quaternion.set(0, 0, 0, 1)
     layer.scale.setScalar(1)
-    layer.matrix.compose(layer.position, layer.quaternion, layer.scale).premultiply(Engine.camera.matrixWorld)
+    layer.matrix.compose(layer.position, layer.quaternion, layer.scale).premultiply(useEngine().camera.matrixWorld)
     layer.matrix.decompose(layer.position, layer.quaternion, layer.scale)
 
     const localPlayerNumber = getGolfPlayerNumber()

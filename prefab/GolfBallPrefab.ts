@@ -2,7 +2,7 @@ import { AssetLoader } from '@xrengine/engine/src/assets/classes/AssetLoader'
 import { PlaySoundEffect } from '@xrengine/engine/src/audio/components/PlaySoundEffect'
 import { SoundEffect } from '@xrengine/engine/src/audio/components/SoundEffect'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { Entity } from '@xrengine/engine/src/ecs/classes/Entity'
 import { addComponent, getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
 import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
@@ -165,8 +165,8 @@ const updateOSIndicator = (ballGroup: BallGroupType): void => {
   const indicator = ballGroup.userData.offscreenIndicator
   const mesh = ballGroup.userData.offscreenIndicatorMesh
 
-  const xr = Engine.renderer.xr
-  const camera = xr.enabled && xr.isPresenting ? xr.getCamera(null as any) : Engine.camera
+  const xr = useEngine().renderer.xr
+  const camera = xr.enabled && xr.isPresenting ? xr.getCamera(null as any) : useEngine().camera
 
   indicator.camera = camera
   indicator.borderScale = 0.9 + 0.1 * Math.abs(Math.sin(Date.now() / 600))
@@ -293,7 +293,7 @@ function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: 
   trailMaterial.uniforms.tailColor.value = colorVec4
   const trailLength = 50
   trailObject.initialize(trailMaterial, trailLength, false, 0, trailHeadGeometry, ballGroup)
-  Engine.scene.add(trailObject)
+  useEngine().scene.add(trailObject)
   ballGroup.userData.trailObject = trailObject
   ballGroup.userData.lastTrailUpdateTime = Date.now()
 
@@ -301,18 +301,18 @@ function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: 
   const coneGeometry = new ConeGeometry(0.1, 0.15)
   const coneMesh = new Mesh(coneGeometry, new MeshPhongMaterial({ color: 'yellow', opacity: 0.75, transparent: true }))
   coneMesh.rotation.x = Math.PI
-  Engine.scene.add(coneMesh)
+  useEngine().scene.add(coneMesh)
   ballGroup.userData.indicatorMesh = coneMesh
 
   // Offscreen ball indicator
   const osIndicatorMesh = new Mesh(coneGeometry, new MeshPhongMaterial({ color: 'yellow' }))
   osIndicatorMesh.scale.setScalar(0.07)
   osIndicatorMesh.scale.z *= 0.1
-  Engine.scene.add(osIndicatorMesh)
+  useEngine().scene.add(osIndicatorMesh)
   ballGroup.userData.offscreenIndicatorMesh = osIndicatorMesh
   const osIndicator = new OffScreenIndicator()
   ballGroup.userData.offscreenIndicator = osIndicator
-  osIndicator.camera = Engine.camera
+  osIndicator.camera = useEngine().camera
   osIndicator.target = ballGroup.position
   osIndicator.margin = 0.05
   osIndicator.setViewportSize(window.innerWidth, window.innerHeight)
@@ -345,14 +345,14 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
 
   if (isClient) {
     // addComponent(ballEntity, InterpolationComponent, {})
-    const gltf = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/golf_ball.glb')
+    const gltf = AssetLoader.getFromCache(useEngine().publicPath + '/projects/puttclub/golf_ball.glb')
     assetLoadCallback(gltf.scene, ballEntity, playerNumber)
 
     addComponent(ballEntity, SoundEffect, {
       src: [
-        Engine.publicPath + '/projects/puttclub/audio/golf_ball_strike.mp3',
-        Engine.publicPath + '/projects/puttclub/audio/golf_ball_drop.wav',
-        Engine.publicPath + '/projects/puttclub/audio/golf_ball_hit_wall.wav'
+        useEngine().publicPath + '/projects/puttclub/audio/golf_ball_strike.mp3',
+        useEngine().publicPath + '/projects/puttclub/audio/golf_ball_drop.wav',
+        useEngine().publicPath + '/projects/puttclub/audio/golf_ball_hit_wall.wav'
       ],
       audio: []
     })

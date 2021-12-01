@@ -6,7 +6,7 @@ import { GolfBotHooks } from './GolfBotHooks'
 import { tweenXRInputSource, updateController } from '@xrengine/engine/src/bot/functions/xrBotHookFunctions'
 import { accessGolfState } from '../GolfSystem'
 import { isCurrentGolfPlayer, getHole, getBall, getTee } from './golfFunctions'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 
 export const GolfBotHookFunctions = {
   [GolfBotHooks.GetBallPosition]: getBallPosition,
@@ -20,7 +20,7 @@ export const GolfBotHookFunctions = {
 }
 
 export function getIsPlayerTurn() {
-  return isCurrentGolfPlayer(Engine.userId)
+  return isCurrentGolfPlayer(useEngine().userId)
 }
 
 export function getIsGoal() {

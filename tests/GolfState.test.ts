@@ -5,7 +5,7 @@ import { UserId } from '@xrengine/common/src/interfaces/UserId'
 import assert from 'assert'
 import { MathUtils } from 'three'
 import { createWorld, World } from '@xrengine/engine/src/ecs/classes/World'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { createGolfReceptor, receptorBallStopped, receptorNextHole, receptorPlayerLeave, receptorSpawnAvatar } from '../GolfStateReceptors'
 import { GolfAction } from '../GolfAction'
 import { mockProgressWorldForNetworkActions } from '@xrengine/engine/tests/networking/NetworkTestHelpers'
@@ -35,13 +35,13 @@ const mockGolfReceptorWithState = (state, receptor) => {
 describe('Golf State', () => {
 
   afterEach(() => {
-    Engine.defaultWorld = null!
-    Engine.currentWorld = null!
+    useEngine().defaultWorld = null!
+    useEngine().currentWorld = null!
   })
   
   beforeEach(() => {
     const world = createWorld()
-    Engine.currentWorld = world
+    useEngine().currentWorld = world
   })
   
   it('player connect', () => {
@@ -81,9 +81,9 @@ describe('Golf State', () => {
 
   describe('next turn progression', () => {
     const world = createWorld()
-    Engine.currentWorld = world
-    Engine.currentWorld.fixedTick = 0
-    Engine.currentWorld.hostId = 'server' as any
+    useEngine().currentWorld = world
+    useEngine().currentWorld.fixedTick = 0
+    useEngine().currentWorld.hostId = 'server' as any
     Network.instance = new TestNetwork()
 
     const mockGolfState = mockState()
@@ -128,7 +128,7 @@ describe('Golf State', () => {
         outOfBounds: false
       }))
 
-      Engine.currentWorld!.receptors = [mockGolfReceptorWithState(mockGolfState, receptorNextHole)]!
+      useEngine().currentWorld!.receptors = [mockGolfReceptorWithState(mockGolfState, receptorNextHole)]!
 
       mockProgressWorldForNetworkActions()
       console.log(mockGolfState.value)

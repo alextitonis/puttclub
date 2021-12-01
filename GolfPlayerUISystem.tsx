@@ -10,7 +10,7 @@ import { removeEntity } from '@xrengine/engine/src/ecs/functions/EntityFunctions
 import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
 import { AvatarComponent } from '@xrengine/engine/src/avatar/components/AvatarComponent'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { Entity } from '@xrengine/engine/src/ecs/classes/Entity'
 import { Network } from '@xrengine/engine/src/networking/classes/Network'
 
@@ -99,10 +99,10 @@ export const GolfPlayerUISystem = async (world: World) => {
         const { avatarHeight } = getComponent(entity, AvatarComponent)
         const avatarTransform = getComponent(entity, TransformComponent)
         const uiTransform = getComponent(ui.entity, TransformComponent)
-        uiTransform.scale.setScalar(Math.max(1, Engine.camera.position.distanceTo(avatarTransform.position) / 3))
+        uiTransform.scale.setScalar(Math.max(1, useEngine().camera.position.distanceTo(avatarTransform.position) / 3))
         uiTransform.position.copy(avatarTransform.position)
         uiTransform.position.y += avatarHeight + 0.3
-        mat.lookAt(Engine.camera.position, uiTransform.position, up)
+        mat.lookAt(useEngine().camera.position, uiTransform.position, up)
         uiTransform.rotation.setFromRotationMatrix(mat)
       }
 

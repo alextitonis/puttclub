@@ -4,7 +4,7 @@
  * @author Gheric Speiginer <github.com/speigg>
  */
 
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { World } from '@xrengine/engine/src/ecs/classes/World'
 import { AssetLoader } from '@xrengine/engine/src/assets/classes/AssetLoader'
 import { GolfAction } from './GolfAction'
@@ -100,10 +100,10 @@ export default async function GolfSystem(world: World) {
     registerGolfBotHooks()
     // pre-cache the assets we need for this game
     await Promise.all([
-      AssetLoader.loadAsync({ url: Engine.publicPath + '/projects/puttclub/avatars/avatar_head.glb' }),
-      AssetLoader.loadAsync({ url: Engine.publicPath + '/projects/puttclub/avatars/avatar_hands.glb' }),
-      AssetLoader.loadAsync({ url: Engine.publicPath + '/projects/puttclub/avatars/avatar_torso.glb' }),
-      AssetLoader.loadAsync({ url: Engine.publicPath + '/projects/puttclub/golf_ball.glb' })
+      AssetLoader.loadAsync({ url: useEngine().publicPath + '/projects/puttclub/avatars/avatar_head.glb' }),
+      AssetLoader.loadAsync({ url: useEngine().publicPath + '/projects/puttclub/avatars/avatar_hands.glb' }),
+      AssetLoader.loadAsync({ url: useEngine().publicPath + '/projects/puttclub/avatars/avatar_torso.glb' }),
+      AssetLoader.loadAsync({ url: useEngine().publicPath + '/projects/puttclub/golf_ball.glb' })
     ])
   }
 
@@ -129,7 +129,7 @@ export default async function GolfSystem(world: World) {
               if (golfBallComponent.state === BALL_STATES.WAITING) {
                 hitBall(entity, entityBall)
                 setBallState(entityBall, BALL_STATES.MOVING)
-                dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
+                dispatchFrom(useEngine().userId, () => GolfAction.playerStroke({}))
               }
             }
           }

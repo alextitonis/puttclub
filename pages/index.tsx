@@ -3,7 +3,7 @@ import { LoadLocationScene } from '@xrengine/client/src/components/World/LoadLoc
 import { LoadEngineWithScene } from '@xrengine/client/src/components/World/LoadEngineWithScene'
 import AvatarInputSwitch from '@xrengine/client-core/src/world/components/Avatar/AvatarInputSwitch'
 import { EngineEvents } from '@xrengine/engine/src/ecs/classes/EngineEvents'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import PlayButton from './components/PlayButton/PlayButton'
 
 export const HomePage = (props): any => {
@@ -22,7 +22,7 @@ export const HomePage = (props): any => {
     if (!joinedWorld) return
 
     setInputsEnabled(true)
-    if (Engine.xrSupported) {
+    if (useEngine().xrSupported) {
       EngineEvents.instance.dispatchEvent({ type: EngineEvents.EVENTS.XR_START })
     }
   }

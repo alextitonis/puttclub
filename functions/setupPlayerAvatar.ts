@@ -10,7 +10,7 @@ import { Quaternion, Vector3 } from 'three'
 import { isEntityLocalClient } from '@xrengine/engine/src/networking/functions/isEntityLocalClient'
 import { setAvatarLayer } from '@xrengine/engine/src/avatar/functions/avatarFunctions'
 import { generateMeshBVH } from '@xrengine/engine/src/scene/functions/bvhWorkerPool'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { isClient } from '@xrengine/engine/src/common/functions/isClient'
 
 const avatarScale = 1.3
@@ -24,12 +24,12 @@ export const setupPlayerAvatar = async (entityPlayer: Entity) => {
   value.remove(avatarComponent.modelContainer)
   avatarComponent.modelContainer.children.forEach((child) => child.removeFromParent())
 
-  const { scene: headGLTF } = AssetLoader.getFromCache(Engine.publicPath + '/projects/puttclub/avatars/avatar_head.glb')
+  const { scene: headGLTF } = AssetLoader.getFromCache(useEngine().publicPath + '/projects/puttclub/avatars/avatar_head.glb')
   const { scene: handGLTF } = AssetLoader.getFromCache(
-    Engine.publicPath + '/projects/puttclub/avatars/avatar_hands.glb'
+    useEngine().publicPath + '/projects/puttclub/avatars/avatar_hands.glb'
   )
   const { scene: torsoGLTF } = AssetLoader.getFromCache(
-    Engine.publicPath + '/projects/puttclub/avatars/avatar_torso.glb'
+    useEngine().publicPath + '/projects/puttclub/avatars/avatar_torso.glb'
   )
 
   const headModel = SkeletonUtils.clone(headGLTF)

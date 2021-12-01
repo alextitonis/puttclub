@@ -10,7 +10,7 @@ import { MathUtils } from 'three'
 import { getGolfPlayerNumber } from './functions/golfFunctions'
 import { GolfColours } from './GolfGameConstants'
 import { GolfState } from './GolfSystem'
-import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
+import { useEngine } from '@xrengine/engine/src/ecs/classes/Engine'
 import { UserId } from '@xrengine/common/src/interfaces/UserId'
 import { LocalGolfState } from './GolfSystem'
 
@@ -212,10 +212,10 @@ export const GolfScorecardUISystem = async (world: World) => {
     layer.position.set(0, 0, -0.5)
     layer.quaternion.set(0, 0, 0, 1)
     layer.scale.setScalar(0.6)
-    layer.matrix.compose(layer.position, layer.quaternion, layer.scale).premultiply(Engine.camera.matrixWorld)
+    layer.matrix.compose(layer.position, layer.quaternion, layer.scale).premultiply(useEngine().camera.matrixWorld)
     layer.matrix.decompose(layer.position, layer.quaternion, layer.scale)
 
-    const localPlayerNumber = getGolfPlayerNumber(Engine.userId)
+    const localPlayerNumber = getGolfPlayerNumber(useEngine().userId)
     const viewingScorecard = GolfState.players.value[localPlayerNumber]?.viewingScorecard
     // console.log(GolfState.players[localPlayerNumber].viewingScorecard)
 
@@ -235,7 +235,7 @@ export const GolfScorecardUISystem = async (world: World) => {
     // uiTransform.position.copy(cameraTransform.position)
     // uiTransform.position.z = -10
     // ui.z
-    // uiTransform.scale.setScalar(Math.max(1, Engine.camera.position.distanceTo(avatarTransform.position) / 3))
+    // uiTransform.scale.setScalar(Math.max(1, useEngine().camera.position.distanceTo(avatarTransform.position) / 3))
     // uiTransform.position.copy(avatarTransform.position)
     // uiTransform.position.y += avatarHeight + 0.3
   }

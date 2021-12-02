@@ -21,7 +21,6 @@ const velocityMultiplier = clubPowerMultiplier * 1000
 const hitAdvanceFactor = 4
 
 export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
-  console.log('hit ball, with state: ' + getComponent(entityBall, GolfBallComponent).state)
   if (getComponent(entityBall, GolfBallComponent).state !== BALL_STATES.WAITING) {
     return
   }

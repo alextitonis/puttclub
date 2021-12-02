@@ -99,7 +99,7 @@ export const receptorPlayerStroke = (s: GolfStateType, action: ReturnType<typeof
     return { stroke: s.stroke + 1 }
   })
   setBallState(getBall(action.$from), BALL_STATES.MOVING)
-  if (world.isHosting) LocalGolfState.ballTimer = 0
+  if (world.isHosting) LocalGolfState.ballTimer.set(0);
 }
 
 /**

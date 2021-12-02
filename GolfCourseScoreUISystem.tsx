@@ -1,6 +1,6 @@
 import { useState } from '@hookstate/core'
 import { World } from '@xrengine/engine/src/ecs/classes/World'
-import { getComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
+import { getComponent, removeComponent } from '@xrengine/engine/src/ecs/functions/ComponentFunctions'
 import { XRUIComponent } from '@xrengine/engine/src/xrui/components/XRUIComponent'
 import { createXRUI } from '@xrengine/engine/src/xrui/functions/createXRUI'
 import React from 'react'
@@ -48,7 +48,8 @@ const GolfCourseScoreView = () => {
           margin: '80px',
           fontFamily: 'Racing Sans One',
           fontStyle: 'normal',
-          fontWeight: 'normal'
+          fontWeight: 'normal',
+          color: 'white'
         }}
       >
         {parScore}
@@ -74,7 +75,7 @@ export const GolfCourseScoreUISystem = async (world: World) => {
     const localPlayerNumber = getGolfPlayerNumber()
     const viewingCourseScore = GolfState.players[localPlayerNumber]?.viewingCourseScore?.value
 
-    // todo: stop displaying after some amount of time
+    // TODO: stop displaying after some amount of time
     const targetOpacity = viewingCourseScore ? 1 : 0
     layer.rootLayer.traverseLayersPreOrder((layer) => {
       layer.contentMesh.material.opacity = MathUtils.lerp(
@@ -84,7 +85,7 @@ export const GolfCourseScoreUISystem = async (world: World) => {
       )
       layer.contentMesh.material.needsUpdate = true
     })
-
+    
     return world
   }
 }

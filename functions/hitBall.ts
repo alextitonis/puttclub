@@ -7,6 +7,7 @@ import { GolfClubComponent } from '../components/GolfClubComponent'
 import { teleportRigidbody } from '@xrengine/engine/src/physics/functions/teleportRigidbody'
 import { TransformComponent } from '@xrengine/engine/src/transform/components/TransformComponent'
 import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
+import { BALL_STATES } from '../prefab/GolfBallPrefab'
 
 /**
  * @author Josh Field <github.com/HexaField>
@@ -20,7 +21,11 @@ const velocityMultiplier = clubPowerMultiplier * 1000
 const hitAdvanceFactor = 4
 
 export const hitBall = (entityClub: Entity, entityBall: Entity): void => {
-  console.log('hitBall')
+  if (getComponent(entityBall, GolfBallComponent).state !== BALL_STATES.WAITING) {
+    return
+  }
+   
+  console.log('hitBall, entityClub:', entityClub, 'entityBall:', entityBall)
   const golfClubComponent = getComponent(entityClub, GolfClubComponent)
   const collider = getComponent(entityBall, ColliderComponent)
   const transform = getComponent(entityBall, TransformComponent)

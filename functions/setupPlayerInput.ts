@@ -28,6 +28,7 @@ import { useWorld } from '@xrengine/engine/src/ecs/functions/SystemHooks'
 import { dispatchFrom } from '@xrengine/engine/src/networking/functions/dispatchFrom'
 import { teleportRigidbody } from '@xrengine/engine/src/physics/functions/teleportRigidbody'
 import { hitBall } from './hitBall'
+import { GolfBallComponent } from '../components/GolfBallComponent'
 
 // we need to figure out a better way than polluting an 8 bit namespace :/
 
@@ -192,15 +193,17 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
         // // rotatePlayer()
         // swingClub()
         const ballEntity = getBall(Engine.userId)
-        const clubEntity = getClub(Engine.userId)
-        const golfClubComponent = getComponent(clubEntity, GolfClubComponent)
-        const ballTransform = getComponent(ballEntity, TransformComponent)
-        const position = ballTransform.position
-        const angle = getAngleToHole(position)
-        golfClubComponent.velocity.copy(new Vector3(0.1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle))
-        hitBall(clubEntity, ballEntity)
-        setBallState(ballEntity, BALL_STATES.MOVING)
-        dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
+        if (getComponent(ballEntity, GolfBallComponent).state === BALL_STATES.WAITING) {
+          const clubEntity = getClub(Engine.userId)
+          const golfClubComponent = getComponent(clubEntity, GolfClubComponent)
+          const ballTransform = getComponent(ballEntity, TransformComponent)
+          const position = ballTransform.position
+          const angle = getAngleToHole(position)
+          golfClubComponent.velocity.copy(new Vector3(0.1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle))
+          hitBall(clubEntity, ballEntity)
+          setBallState(ballEntity, BALL_STATES.MOVING)
+          dispatchFrom(Engine.userId, () => GolfAction.playerStroke({}))
+        }
       }
     )
   }

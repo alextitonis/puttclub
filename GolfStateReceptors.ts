@@ -196,7 +196,12 @@ export const receptorNextTurn = (s: GolfStateType, action: ReturnType<typeof Gol
   console.log('\n\nplayerSequence', playerSequence, currentPlayerIndex, currentHole, '\n\n')
   const nextPlayer = playerSequence.filter((p) => {
     console.log(p)
-    return p.scores.length <= currentHole && p.isConnected
+
+    if (playerSequence.length === 1) {
+      return p.scores.length <= currentHole && p.isConnected
+    } else {
+      return p.scores.length <= currentHole && p.isConnected && p.userId !== currentPlayerId
+    }
   })[0]
 
   console.log('nextPlayer', nextPlayer)

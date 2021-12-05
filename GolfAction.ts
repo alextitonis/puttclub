@@ -57,7 +57,8 @@ export const GolfAction = {
   resetBall: defineActionCreator({
     type: 'puttclub.RESET_BALL',
     userId: matchesUserId,
-    position: matches.tuple(matches.number, matches.number, matches.number)
+    position: matches.tuple(matches.number, matches.number, matches.number),
+    disconnect: matches.boolean
   }),
 
   nextHole: defineActionCreator({

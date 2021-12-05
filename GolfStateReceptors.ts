@@ -60,7 +60,7 @@ export const receptorSpawnAvatar = (s: GolfStateType, action: ReturnType<typeof 
         stroke: 0,
         viewingScorecard: false,
         viewingCourseScore: false,
-        isConnected: true
+        isConnected: true,
       }
     ])
     console.log(`player ${userId} joined`)
@@ -99,6 +99,7 @@ export const receptorPlayerStroke = (s: GolfStateType, action: ReturnType<typeof
     return { stroke: s.stroke + 1 }
   })
   setBallState(getBall(action.$from), BALL_STATES.MOVING)
+  console.log('incremented stoke set ball moving')
   if (world.isHosting) LocalGolfState.ballTimer.set(0);
 }
 
@@ -197,7 +198,7 @@ export const receptorNextTurn = (s: GolfStateType, action: ReturnType<typeof Gol
   const nextPlayer = playerSequence.filter((p) => {
     console.log(p)
 
-    if (playerSequence.length === 1) {
+    if (playerSequence.length === 1 || (playerSequence.length > 1 && !otherPlayersAreConnected(playerSequence))) {
       return p.scores.length <= currentHole && p.isConnected
     } else {
       return p.scores.length <= currentHole && p.isConnected && p.userId !== currentPlayerId
@@ -228,6 +229,18 @@ export const receptorNextTurn = (s: GolfStateType, action: ReturnType<typeof Gol
     // if not, the round has finished
     if (!isClient) dispatchFrom(world.hostId, () => GolfAction.nextHole({}))
   }
+}
+
+function otherPlayersAreConnected(playerSequence): boolean {
+  let count = 0;
+
+  for (let p in playerSequence) {
+    if (playerSequence[p].isConnected === true) {
+      count++;
+    }
+  }
+
+  return count > 1
 }
 
 /**
@@ -265,7 +278,8 @@ export const receptorNextHole = (s: GolfStateType, action: ReturnType<typeof Gol
     dispatchFrom(world.hostId, () =>
       GolfAction.resetBall({
         userId: s.players[0].userId.value,
-        position: getTeePosition(s.currentHole.value)
+        position: getTeePosition(s.currentHole.value),
+        disconnect: false
       })
     )
 }
@@ -276,9 +290,12 @@ export const receptorNextHole = (s: GolfStateType, action: ReturnType<typeof Gol
  */
 export const receptorResetBall = (s: GolfStateType, action: ReturnType<typeof GolfAction.resetBall>) => {
   const entityBall = getBall(action.userId)
+  console.log('resetting ball, ball type: ' + (typeof entityBall))
   if (typeof entityBall !== 'undefined') {
+    console.log('reseting ball, dc: ' + action.disconnect)
     resetBall(entityBall, action.position)
-    setBallState(entityBall, BALL_STATES.WAITING)
+    if (action.disconnect === true) setBallState(entityBall, BALL_STATES.INACTIVE)
+    else setBallState(entityBall, BALL_STATES.WAITING)
   }
 }
 
@@ -295,7 +312,18 @@ export const receptorLookAtScoreboard = (s: GolfStateType, action: ReturnType<ty
  */
 export const receptorShowCourseScore = (s: GolfStateType, action: ReturnType<typeof GolfAction.showCourseScore>) => {
   const player = s.players.find((p) => p.userId.value === action.userId)
-  if (player) player.viewingCourseScore.set((v) => (typeof action.value === 'boolean' ? action.value : !v))
+  if (player) {
+    player.viewingCourseScore.set((v) => (typeof action.value === 'boolean' ? action.value : !v))
+    if (player.viewingCourseScore.value === true) {
+      if (player.resetViewingCourseScore.value !== undefined) {
+        clearTimeout(player.resetViewingCourseScore.value)
+        player.resetViewingCourseScore.set(undefined)
+      }
+      player.resetViewingCourseScore.set(setTimeout(() => {
+        player.viewingCourseScore.set(false)
+      }, 5000))
+    }
+  }
 }
 
 /**
@@ -305,10 +333,15 @@ export const receptorPlayerLeave = (s: GolfStateType, action: ReturnType<typeof 
   const world = useWorld()
   s.players.find((p) => p.userId.value === action.userId)?.merge({ isConnected: false })
   if (action.userId === s.currentPlayerId.value) {
+    const ball = getBall(action.userId);
+    console.log('receptorPlayerLeave, ball: ' + ball + ' named entities: ' + JSON.stringify(useWorld().namedEntities))
+    if (ball) setBallState(ball, BALL_STATES.INACTIVE)
+
     dispatchFrom(world.hostId, () =>
       GolfAction.resetBall({
         userId: action.userId,
-        position: getTeePosition(s.currentHole.value)
+        position: getTeePosition(s.currentHole.value),
+        disconnect: true
       })
     )
     dispatchFrom(world.hostId, () => GolfAction.nextTurn({ userId: action.userId }))

@@ -75,7 +75,6 @@ export const GolfCourseScoreUISystem = async (world: World) => {
     const localPlayerNumber = getGolfPlayerNumber()
     const viewingCourseScore = GolfState.players[localPlayerNumber]?.viewingCourseScore?.value
 
-    // TODO: stop displaying after some amount of time
     const targetOpacity = viewingCourseScore ? 1 : 0
     layer.rootLayer.traverseLayersPreOrder((layer) => {
       layer.contentMesh.material.opacity = MathUtils.lerp(

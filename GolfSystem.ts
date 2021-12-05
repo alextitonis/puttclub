@@ -53,6 +53,7 @@ export const GolfState = createState({
     stroke: number
     viewingScorecard: boolean
     viewingCourseScore: boolean
+    resetViewingCourseScore: any
     isConnected: boolean
   }>,
   currentPlayerId: undefined! as UserId,
@@ -126,6 +127,7 @@ export default async function GolfSystem(world: World) {
             const { collisionEntity } = getCollisions(entity, GolfBallComponent)
             if (collisionEntity !== null && collisionEntity === entityBall) {
               const golfBallComponent = getComponent(entityBall, GolfBallComponent)
+              //hit ball
               if (golfBallComponent.state === BALL_STATES.WAITING) {
                 hitBall(entity, entityBall)
                 setBallState(entityBall, BALL_STATES.MOVING)

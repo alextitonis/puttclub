@@ -11,7 +11,7 @@ const config: ProjectConfigInterface = {
     }
   },
   services: undefined,
-  databaseSeed: undefined,
+  databaseSeed: './locationseed.ts'
 }
 
 export default config

@@ -72,12 +72,11 @@ export const setupPlayerInput = (entityPlayer: Entity) => {
     GolfInput.TELEPORT,
     (entity: Entity, inputKey: InputAlias, inputValue: InputValue, delta: number) => {
       if (inputValue.lifecycleState !== LifecycleValue.Ended) return
-      const playerNumber = getGolfPlayerNumber(Engine.userId)
       const ballEntity = getBall(Engine.userId)
       if (!ballEntity) return
+      if(getComponent(ballEntity, GolfBallComponent).state !== BALL_STATES.WAITING) return
       const ballTransform = getComponent(ballEntity, TransformComponent)
       const position = ballTransform.position
-      if(position.y < 1) return // dont teleport if ball below world
       console.log('teleporting to', position.x, position.y, position.z)
 
       const angle = getAngleToHole(position)

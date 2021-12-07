@@ -40,6 +40,7 @@ import { createGolfReceptor } from './GolfStateReceptors'
 
 export const LocalGolfState = createState({
   ballTimer: 0,
+  ballVelocityTimer: 0,
   golfHolePars: [] as Array<number>
 })
 
@@ -53,11 +54,10 @@ export const GolfState = createState({
     stroke: number
     viewingScorecard: boolean
     viewingCourseScore: boolean
-    resetViewingCourseScore: any
     isConnected: boolean
   }>,
   currentPlayerId: undefined! as UserId,
-  currentHole: 0
+  currentHole: 5
 })
 
 export type GolfStateType = typeof GolfState
@@ -160,7 +160,7 @@ export default async function GolfSystem(world: World) {
       const golfBallComponent = getComponent(activeBallEntity, GolfBallComponent)
       updateBall(activeBallEntity)
 
-      if (!isClient && golfBallComponent.state === BALL_STATES.MOVING) {
+      if (!isClient && golfBallComponent?.state === BALL_STATES.MOVING) {
         const { velocity } = getComponent(activeBallEntity, VelocityComponent)
         console.log('ball velocity', velocity)
         LocalGolfState.ballTimer.set(LocalGolfState.ballTimer.value+1)
@@ -170,31 +170,36 @@ export default async function GolfSystem(world: World) {
           const position = getComponent(activeBallEntity, TransformComponent)?.position
           if (!position) return
           const velMag = velocity.lengthSq()
-          if (velMag < 0.001 || position.y < -100 || LocalGolfState.ballTimer.value > 60 * 5) {
+          LocalGolfState.ballVelocityTimer.set((val) => val += velMag < 0.001 ? 1 : 0)
+          const ballStopped = LocalGolfState.ballVelocityTimer.value > 60 || position.y < -100 || LocalGolfState.ballTimer.value > 60 * 5
+          console.log(LocalGolfState.ballVelocityTimer.value, position.y, LocalGolfState.ballTimer.value)
+          if (ballStopped) {
+            LocalGolfState.ballVelocityTimer.set(0)
             setBallState(activeBallEntity, BALL_STATES.STOPPED)
-            setTimeout(() => {
-              const position = getComponent(activeBallEntity, TransformComponent)?.position
-              golfBallComponent.groundRaycast.origin.copy(position)
-              world.physics.doRaycast(golfBallComponent.groundRaycast)
-              const outOfBounds = !golfBallComponent.groundRaycast.hits.length
-              const activeHoleEntity = getHole(accessGolfState().currentHole)
-              if (!position) return
-              const { collisionEvent } = getCollisions(activeBallEntity, GolfHoleComponent)
-              const dist = position.distanceToSquared(getComponent(activeHoleEntity, TransformComponent).position)
-              // ball-hole collision not being detected, not sure why, use dist for now
-              const inHole = dist < 0.01 //typeof collisionEvent !== 'undefined'
-              console.log(getComponent(activeHoleEntity, TransformComponent).position)
-              console.log('\n\n\n========= ball stopped', outOfBounds, inHole, dist, collisionEvent, '\n')
+            const position = getComponent(activeBallEntity, TransformComponent)?.position
+            golfBallComponent.groundRaycast.origin.copy(position)
+            world.physics.doRaycast(golfBallComponent.groundRaycast)
+            const outOfBounds = !golfBallComponent.groundRaycast.hits.length
+            const activeHoleEntity = getHole(accessGolfState().currentHole)
+            if (!position) return
+            const { collisionEvent } = getCollisions(activeBallEntity, GolfHoleComponent)
+            const dist = position.distanceToSquared(getComponent(activeHoleEntity, TransformComponent).position)
+            // ball-hole collision not being detected, not sure why, use dist for now
+            const inHole = dist < 0.01 //typeof collisionEvent !== 'undefined'
+            console.log(getComponent(activeHoleEntity, TransformComponent).position)
+            console.log('\n\n\n========= ball stopped', outOfBounds, inHole, dist, collisionEvent, '\n')
 
-              dispatchFrom(world.hostId, () =>
-                GolfAction.ballStopped({
-                  userId: currentPlayerId,
-                  position: position.toArray(),
-                  inHole,
-                  outOfBounds
-                })
-              )
-            }, 1000)
+            dispatchFrom(world.hostId, () =>
+              GolfAction.ballStopped({
+                userId: currentPlayerId,
+                position: position.toArray(),
+                inHole,
+                outOfBounds
+              })
+            )
+            
+
+
           }
         }
       }

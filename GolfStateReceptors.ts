@@ -185,6 +185,7 @@ export const receptorNextTurn = (s: GolfStateType, action: ReturnType<typeof Gol
       const total = stroke - par
       currentPlayerState.scores.set([...currentPlayerState.scores.value, total])
       dispatchFrom(world.hostId, () => GolfAction.showCourseScore({ userId: action.userId, value: true }))
+      dispatchFrom(world.hostId, () => GolfAction.showCourseScore({ userId: action.userId, value: false })).delay(3 * 60)
     }
 
     setBallState(entityBall, BALL_STATES.INACTIVE)
@@ -217,7 +218,8 @@ export const receptorNextTurn = (s: GolfStateType, action: ReturnType<typeof Gol
         dispatchFrom(world.hostId, () =>
           GolfAction.resetBall({
             userId: nextPlayer.userId,
-            position: getTeePosition(s.currentHole.value)
+            position: getTeePosition(s.currentHole.value),
+            disconnect: false
           })
         )
     }
@@ -312,18 +314,7 @@ export const receptorLookAtScoreboard = (s: GolfStateType, action: ReturnType<ty
  */
 export const receptorShowCourseScore = (s: GolfStateType, action: ReturnType<typeof GolfAction.showCourseScore>) => {
   const player = s.players.find((p) => p.userId.value === action.userId)
-  if (player) {
-    player.viewingCourseScore.set((v) => (typeof action.value === 'boolean' ? action.value : !v))
-    if (player.viewingCourseScore.value === true) {
-      if (player.resetViewingCourseScore.value !== undefined) {
-        clearTimeout(player.resetViewingCourseScore.value)
-        player.resetViewingCourseScore.set(undefined)
-      }
-      player.resetViewingCourseScore.set(setTimeout(() => {
-        player.viewingCourseScore.set(false)
-      }, 5000))
-    }
-  }
+  if (player) player.viewingCourseScore.set((v) => (typeof action.value === 'boolean' ? action.value : !v))
 }
 
 /**

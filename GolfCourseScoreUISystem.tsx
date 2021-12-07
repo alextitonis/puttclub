@@ -23,8 +23,9 @@ const strokeToParScore = {
 
 const GolfCourseScoreView = () => {
   const playerState = getGolfPlayerState()
-  const scores = playerState ? playerState.scores.value : []
+  const scores = playerState ? playerState.scores : []
   const currentCourseScore = scores[scores.length - 1] || 0
+  console.log(playerState, playerState?.scores)
   const parScore = strokeToParScore[currentCourseScore]
   return (
     <>
@@ -63,7 +64,7 @@ export const GolfCourseScoreUISystem = async (world: World) => {
 
   return () => {
     const uiComponent = getComponent(ui.entity, XRUIComponent)
-    if (!uiComponent) return world
+    if (!uiComponent) return
 
     const layer = uiComponent.layer
     layer.position.set(0, 0, -0.5)
@@ -84,7 +85,5 @@ export const GolfCourseScoreUISystem = async (world: World) => {
       )
       layer.contentMesh.material.needsUpdate = true
     })
-    
-    return world
   }
 }

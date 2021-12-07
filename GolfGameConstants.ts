@@ -2,7 +2,7 @@ import { Color } from 'three'
 
 export enum GolfCollisionGroups {
   Ball = 1 << 10,
-  Hole = 1 << 11,
+  // Hole = 1 << 11, // no longer necessary
   Club = 1 << 12,
   Course = 1 << 13
 }

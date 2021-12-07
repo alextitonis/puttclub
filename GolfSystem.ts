@@ -162,32 +162,31 @@ export default async function GolfSystem(world: World) {
 
       if (!isClient && golfBallComponent?.state === BALL_STATES.MOVING) {
         const { velocity } = getComponent(activeBallEntity, VelocityComponent)
-        console.log('ball velocity', velocity)
-        LocalGolfState.ballTimer.set(LocalGolfState.ballTimer.value+1)
+        LocalGolfState.ballTimer.set(LocalGolfState.ballTimer.value + 1)
+
         if (LocalGolfState.ballTimer.value > 60) {
-          // const { velocity } = getComponent(activeBallEntity, VelocityComponent)
-          // console.log(velocity)
           const position = getComponent(activeBallEntity, TransformComponent)?.position
           if (!position) return
+
           const velMag = velocity.lengthSq()
           LocalGolfState.ballVelocityTimer.set((val) => val += velMag < 0.001 ? 1 : 0)
           const ballStopped = LocalGolfState.ballVelocityTimer.value > 60 || position.y < -100 || LocalGolfState.ballTimer.value > 60 * 5
-          console.log(LocalGolfState.ballVelocityTimer.value, position.y, LocalGolfState.ballTimer.value)
+
           if (ballStopped) {
             LocalGolfState.ballVelocityTimer.set(0)
             setBallState(activeBallEntity, BALL_STATES.STOPPED)
-            const position = getComponent(activeBallEntity, TransformComponent)?.position
+
             golfBallComponent.groundRaycast.origin.copy(position)
             world.physics.doRaycast(golfBallComponent.groundRaycast)
-            const outOfBounds = !golfBallComponent.groundRaycast.hits.length
+            // if ball still moving after 5 seconds, assume its out of bounds
+            const outOfBounds = LocalGolfState.ballTimer.value > 60 * 5 || !golfBallComponent.groundRaycast.hits.length
             const activeHoleEntity = getHole(accessGolfState().currentHole)
-            if (!position) return
-            const { collisionEvent } = getCollisions(activeBallEntity, GolfHoleComponent)
+
+            // const { collisionEvent } = getCollisions(activeBallEntity, GolfHoleComponent)
             const dist = position.distanceToSquared(getComponent(activeHoleEntity, TransformComponent).position)
-            // ball-hole collision not being detected, not sure why, use dist for now
+            // ball-hole collision not being detected because there is no trigger persisted event implemented
             const inHole = dist < 0.01 //typeof collisionEvent !== 'undefined'
-            console.log(getComponent(activeHoleEntity, TransformComponent).position)
-            console.log('\n\n\n========= ball stopped', outOfBounds, inHole, dist, collisionEvent, '\n')
+            console.log('\n========= ball stopped', outOfBounds, inHole, dist, '\n')
 
             dispatchFrom(world.hostId, () =>
               GolfAction.ballStopped({
@@ -197,8 +196,6 @@ export default async function GolfSystem(world: World) {
                 outOfBounds
               })
             )
-            
-
 
           }
         }

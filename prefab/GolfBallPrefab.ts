@@ -368,7 +368,7 @@ export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._
     contactOffset: -0.005, //golfBallColliderExpansion,
     collisionLayer: GolfCollisionGroups.Ball,
     collisionMask:
-      CollisionGroups.Default | CollisionGroups.Ground | GolfCollisionGroups.Course | GolfCollisionGroups.Hole
+      CollisionGroups.Default | CollisionGroups.Ground | GolfCollisionGroups.Course
   })
 
   const body = world.physics.addBody({

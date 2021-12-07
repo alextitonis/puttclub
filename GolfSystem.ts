@@ -57,7 +57,7 @@ export const GolfState = createState({
     isConnected: boolean
   }>,
   currentPlayerId: undefined! as UserId,
-  currentHole: 5
+  currentHole: 0
 })
 
 export type GolfStateType = typeof GolfState

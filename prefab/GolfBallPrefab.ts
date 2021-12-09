@@ -323,15 +323,10 @@ function assetLoadCallback(group: Group, ballEntity: Entity, ownerPlayerNumber: 
 
 export const initializeGolfBall = (action: typeof GolfAction.spawnBall.matches._TYPE) => {
   const world = useWorld()
-  console.log(accessGolfState())
-  console.log(JSON.stringify(accessGolfState()))
-  console.log(GolfState)
-  console.log(JSON.stringify(GolfState.value))
-  console.log(action.userId)
   const ownerEntity = world.getUserAvatarEntity(action.userId)
-  const playerNumber = getGolfPlayerNumber(action.userId)
+  const playerNumber = action.playerNumber
   const ballEntity = world.getNetworkObject(action.networkId)
-  console.log('initializeGolfBall', JSON.stringify(action), ownerEntity, playerNumber, ballEntity)
+  // console.log('initializeGolfBall', JSON.stringify(action), ownerEntity, playerNumber, ballEntity)
 
   const teeEntity = getTee(accessGolfState().currentHole)
   const teeTransform = getComponent(teeEntity, TransformComponent)

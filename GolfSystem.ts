@@ -109,11 +109,6 @@ export default async function GolfSystem(world: World) {
   }
 
   return () => {
-    for (const entity of avatarComponentQuery.exit()) {
-      const { userId } = getComponent(entity, NetworkObjectComponent, true)
-      dispatchFrom(world.hostId, () => GolfAction.playerLeave({ userId }))
-    }
-
     for (const entity of golfClubQuery()) {
       const { number } = getComponent(entity, GolfClubComponent)
       const ownerEntity = getPlayerEntityFromNumber(number)

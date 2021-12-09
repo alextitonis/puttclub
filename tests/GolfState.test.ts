@@ -6,7 +6,7 @@ import assert from 'assert'
 import { MathUtils } from 'three'
 import { createWorld, World } from '@xrengine/engine/src/ecs/classes/World'
 import { Engine } from '@xrengine/engine/src/ecs/classes/Engine'
-import { createGolfReceptor, receptorBallStopped, receptorNextHole, receptorPlayerLeave, receptorSpawnAvatar } from '../GolfStateReceptors'
+import { createGolfReceptor, receptorBallStopped, receptorNextHole, receptorPlayerLeave, receptorClientCreate } from '../GolfStateReceptors'
 import { GolfAction } from '../GolfAction'
 import { mockProgressWorldForNetworkActions } from '@xrengine/engine/tests/networking/NetworkTestHelpers'
 import { Network } from '@xrengine/engine/src/networking/classes/Network'
@@ -50,7 +50,7 @@ describe('Golf State', () => {
     const mockUserId = MathUtils.generateUUID()
 
     it('should add player to state', () => {
-      receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
+      receptorClientCreate(mockGolfState, NetworkWorldAction.spawnAvatar({
         userId: mockUserId as UserId,
         parameters: {} as any,
       }))
@@ -69,7 +69,7 @@ describe('Golf State', () => {
     })
 
     it('should not add player again on reconnect', () => {
-      receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
+      receptorClientCreate(mockGolfState, NetworkWorldAction.spawnAvatar({
         userId: mockUserId as UserId,
         parameters: {} as any,
       }))
@@ -91,7 +91,7 @@ describe('Golf State', () => {
     const mockUserId2 = MathUtils.generateUUID()
 
     it('single player', () => {
-      receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
+      receptorClientCreate(mockGolfState, NetworkWorldAction.spawnAvatar({
         userId: mockUserId1 as UserId,
         parameters: {} as any,
       }))
@@ -111,7 +111,7 @@ describe('Golf State', () => {
     })
 
     it('second player', () => {
-      receptorSpawnAvatar(mockGolfState, NetworkWorldAction.spawnAvatar({
+      receptorClientCreate(mockGolfState, NetworkWorldAction.spawnAvatar({
         userId: mockUserId2 as UserId,
         parameters: {} as any,
       }))

@@ -1,20 +1,27 @@
 import { Downgraded } from "@hookstate/core"
 import { SpawnPoseComponent } from "@xrengine/engine/src/avatar/components/SpawnPoseComponent"
 import { isClient } from "@xrengine/engine/src/common/functions/isClient"
+import { Engine } from "@xrengine/engine/src/ecs/classes/Engine"
 import { getComponent } from "@xrengine/engine/src/ecs/functions/ComponentFunctions"
 import { useWorld } from "@xrengine/engine/src/ecs/functions/SystemHooks"
-import { dispatchFrom } from "@xrengine/engine/src/networking/functions/dispatchFrom"
+import { dispatchFrom, dispatchFromHost } from "@xrengine/engine/src/networking/functions/dispatchFrom"
 import { NetworkWorldAction } from "@xrengine/engine/src/networking/functions/NetworkWorldAction"
 import { matches } from "@xrengine/engine/src/networking/interfaces/Action"
 import { TransformComponent } from "@xrengine/engine/src/transform/components/TransformComponent"
 import { GolfBallComponent } from "./components/GolfBallComponent"
-import { getBall, getCoursePar, getTee } from "./functions/golfFunctions"
+import { getBall, getCoursePar, getGolfPlayerNumber, getTee } from "./functions/golfFunctions"
 import { setupPlayerAvatar, setupPlayerAvatarNotInVR, setupPlayerAvatarVR } from "./functions/setupPlayerAvatar"
 import { setupPlayerInput } from "./functions/setupPlayerInput"
 import { GolfAction } from "./GolfAction"
 import { getTeePosition, LocalGolfState, GolfStateType } from "./GolfSystem"
 import { BALL_STATES, initializeGolfBall, resetBall, setBallState } from "./prefab/GolfBallPrefab"
 import { initializeGolfClub } from "./prefab/GolfClubPrefab"
+
+// client connect
+// send state from host
+// client sends joined world
+// server sends player join
+
 
 // IMPORTANT : For FLUX pattern, consider state immutable outside a receptor
 export function createGolfReceptor (golfState: GolfStateType) {
@@ -24,7 +31,8 @@ export function createGolfReceptor (golfState: GolfStateType) {
         .when(GolfAction.sendState.matches, ({ state }) => {
           s.set(state)
         })
-        .when(NetworkWorldAction.spawnAvatar.matches, action => receptorSpawnAvatar(s, action))
+        .when(NetworkWorldAction.createClient.matches, action => receptorClientCreate(s, action))
+        .when(NetworkWorldAction.joinedWorld.matchesFromAny, action => receptorPlayerJoin(s, action))
         .when(NetworkWorldAction.setXRMode.matchesFromAny, action => receptorSetXRMode(s, action))
         .when(GolfAction.playerStroke.matchesFromUser(s.currentPlayerId.value), action => receptorPlayerStroke(s, action))
         .when(GolfAction.spawnBall.matches, action => receptorSpawnBall(s, action))
@@ -35,40 +43,53 @@ export function createGolfReceptor (golfState: GolfStateType) {
         .when(GolfAction.resetBall.matches, action => receptorResetBall(s, action))
         .when(GolfAction.lookAtScorecard.matchesFromAny, action => receptorLookAtScoreboard(s, action))
         .when(GolfAction.showCourseScore.matches, action => receptorShowCourseScore(s, action))
-        .when(GolfAction.playerLeave.matches, action => receptorPlayerLeave(s, action))
+        .when(NetworkWorldAction.destroyClient.matches, action => receptorPlayerLeave(s, action))
     })
   }
 }
 
 /**
- * On PLAYER_JOINED
+ * On CREATE_CLIENT
  * - Add a player to player list (start at hole 0, scores at 0 for all holes)
+ * - If player already exists, set connected
+ * - Dispatch state to all players
+ */
+export const receptorClientCreate = (s: GolfStateType, action: ReturnType<typeof NetworkWorldAction.createClient>) => {
+  const { userId } = action
+  const world = useWorld()
+  if(!isClient) {
+    const playerAlreadyExists = s.players.find((p) => p.userId.value === userId)
+    if (playerAlreadyExists) {
+      playerAlreadyExists.merge({ isConnected: true })
+      console.log(`player ${userId} rejoined`)
+    } else {
+      s.players.merge([
+        {
+          userId: userId,
+          scores: [],
+          stroke: 0,
+          viewingScorecard: false,
+          viewingCourseScore: false,
+          isConnected: true,
+        }
+      ])
+      console.log(`player ${userId} joined`)
+    }
+    dispatchFrom(world.hostId, () => GolfAction.sendState({ state: s.attach(Downgraded).value }))
+  }
+}
+
+/**
+ * On PLAYER_JOINED
  * - spawn golf club
  * - spawn golf ball
  */
-export const receptorSpawnAvatar = (s: GolfStateType, action: ReturnType<typeof NetworkWorldAction.spawnAvatar>) => {
+export const receptorPlayerJoin = (s: GolfStateType, action: ReturnType<typeof NetworkWorldAction.joinedWorld>) => {
   const { userId } = action
-  const playerAlreadyExists = s.players.find((p) => p.userId.value === userId)
-  if (playerAlreadyExists) {
-    playerAlreadyExists.merge({ isConnected: true })
-    console.log(`player ${userId} rejoined`)
-  } else {
-    s.players.merge([
-      {
-        userId: userId,
-        scores: [],
-        stroke: 0,
-        viewingScorecard: false,
-        viewingCourseScore: false,
-        isConnected: true,
-      }
-    ])
-    console.log(`player ${userId} joined`)
-  }
   const world = useWorld()
-  dispatchFrom(world.hostId, () => GolfAction.sendState({ state: s.attach(Downgraded).value })).to(userId)
-  dispatchFrom(world.hostId, () => GolfAction.spawnBall({ userId }))
-  dispatchFrom(world.hostId, () => GolfAction.spawnClub({ userId }))
+  const playerNumber = getGolfPlayerNumber(userId)
+  dispatchFrom(world.hostId, () => GolfAction.spawnBall({ userId, playerNumber }))
+  dispatchFrom(world.hostId, () => GolfAction.spawnClub({ userId, playerNumber }))
   const entity = world.getUserAvatarEntity(userId)
   setupPlayerAvatar(entity)
   setupPlayerInput(entity)
@@ -320,7 +341,7 @@ export const receptorShowCourseScore = (s: GolfStateType, action: ReturnType<typ
 /**
  * If a player leaves on their turn,
  */
-export const receptorPlayerLeave = (s: GolfStateType, action: ReturnType<typeof GolfAction.playerLeave>) => {
+export const receptorPlayerLeave = (s: GolfStateType, action: ReturnType<typeof NetworkWorldAction.destroyClient>) => {
   const world = useWorld()
   s.players.find((p) => p.userId.value === action.userId)?.merge({ isConnected: false })
   if (action.userId === s.currentPlayerId.value) {

@@ -14,24 +14,16 @@ export const GolfAction = {
     par: matches.number
   }),
 
-  // playerJoined: defineActionCreator({
-  //   type: 'puttclub.PLAYER_JOINED',
-  //   userId: matchesUserId
-  // }),
-
-  // playerReady: defineActionCreator({
-  //   type: 'puttclub.PLAYER_READY',
-  //   userId: matchesUserId
-  // }, {allowFromAny: true}),
-
   spawnBall: defineActionCreator({
     ...NetworkWorldAction.spawnObject.actionShape,
-    prefab: 'puttclub.ball'
+    prefab: 'puttclub.ball',
+    playerNumber: matches.number
   }),
 
   spawnClub: defineActionCreator({
     ...NetworkWorldAction.spawnObject.actionShape,
-    prefab: 'puttclub.club'
+    prefab: 'puttclub.club',
+    playerNumber: matches.number
   }),
 
   playerStroke: defineActionCreator(
@@ -78,10 +70,5 @@ export const GolfAction = {
     type: 'puttclub.SHOW_COURSE_SCORE',
     userId: matchesUserId,
     value: matches.some(matches.boolean, matches.literal('toggle'))
-  }),
-
-  playerLeave: defineActionCreator({
-    type: 'puttclub.PLAYER_LEAVE',
-    userId: matchesUserId
   })
 }

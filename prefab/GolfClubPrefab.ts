@@ -208,7 +208,7 @@ export const initializeGolfClub = (action: typeof GolfAction.spawnClub.matches._
   const world = useWorld()
   const ownerEntity = world.getUserAvatarEntity(action.userId)
   const entityClub = world.getNetworkObject(action.networkId)
-  const playerNumber = getGolfPlayerNumber(action.userId)
+  const playerNumber = action.playerNumber
 
   const transform = addComponent(entityClub, TransformComponent, {
     position: new Vector3(),
